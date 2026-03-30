@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Futuristic Tech Dark Theme */
+  --cl-background: #060B19;
+  /* Deep space tech dark */
+  --cl-foreground: #F8FAFC;
+  /* Bright text */
+  --cl-primary: #3B82F6;
+  /* Neon Blue */
+  --cl-primary-glow: rgba(59, 130, 246, 0.4);
+  --cl-secondary: #8B5CF6;
+  /* Purple/Violet */
+
+  --cl-muted: #0F172A;
+  /* Dark element background */
+  --cl-muted-foreground: #94A3B8;
+
+  --cl-border: rgba(255, 255, 255, 0.08);
+  --cl-border-glow: rgba(59, 130, 246, 0.2);
+
+  --cl-radius: 0.75rem;
+
+  /* Additional layout variables */
+  --cl-sidebar-width: 250px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--cl-background);
+  color: var(--cl-foreground);
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+/* Headings get a more techy font */
+h1,
+h2,
+h3,
+h4,
+.font-tech {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Scrollbar styling for tech look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cl-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--cl-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--cl-primary-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 15px 0 var(--cl-primary-glow);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 var(--cl-primary-glow);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Futuristic UI Classes */
+
+.glass-panel {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--cl-border);
+}
+
+.enterprise-card {
+  background: var(--cl-muted);
+  border: 1px solid var(--cl-border);
+  border-radius: var(--cl-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.enterprise-card:hover {
+  border-color: var(--cl-border-glow);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px var(--cl-border-glow);
+  transform: translateY(-2px);
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+
+.primary-button:hover {
+  background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+}
+
+.tech-border {
+  position: relative;
+}
+
+.tech-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cl-primary), transparent);
+  opacity: 0.5;
+}
