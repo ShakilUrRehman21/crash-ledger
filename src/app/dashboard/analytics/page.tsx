@@ -6,16 +6,31 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     BarChart, Bar, Legend, AreaChart, Area
 } from "recharts";
-import { AlertTriangle } from "lucide-react";
+import { BarChart2 } from "lucide-react";
+
+const card = "bg-white rounded-2xl border border-[#EFE9E1] shadow-sm p-6";
+const axisTick = { fontSize: 11, fill: "#9CA3AF" };
+const tooltipStyle = { borderRadius: 12, border: "1px solid #EFE9E1", fontSize: 12, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" };
 
 function RiskBar({ value }: { value: number }) {
-    const color = value >= 70 ? "#EF4444" : value >= 40 ? "#F59E0B" : "#22C55E";
+    const color = value >= 70 ? "#EF4444" : value >= 40 ? "#F59E0B" : "#10B981";
     return (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ flex: 1, height: 6, background: "#F1F5F9", borderRadius: 3, overflow: "hidden" }}>
-                <div style={{ width: `${Math.min(100, Math.max(0, value))}%`, height: "100%", background: color, borderRadius: 3, transition: "width 0.6s ease" }} />
+        <div className="flex items-center gap-2">
+            <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(100, Math.max(0, value))}%`, background: color }} />
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color, width: 28, textAlign: "right" }}>{value}</span>
+            <span className="text-xs font-bold w-8 text-right" style={{ color }}>{value}</span>
+        </div>
+    );
+}
+
+function ChartHeader({ title, unit, desc }: { title: string; unit?: string; desc: string }) {
+    return (
+        <div className="mb-4">
+            <h3 className="text-base font-bold text-[#111827] font-heading">
+                {title} {unit && <span className="text-xs font-medium text-neutral-400">({unit})</span>}
+            </h3>
+            <p className="text-xs text-neutral-400">{desc}</p>
         </div>
     );
 }
@@ -28,6 +43,7 @@ export default function AnalyticsPage() {
     useEffect(() => {
         const wid = localStorage.getItem("cl_workspace_id");
         if (wid) setWorkspaceId(wid);
+        else setLoading(false);
     }, []);
 
     useEffect(() => {
@@ -41,19 +57,30 @@ export default function AnalyticsPage() {
             .catch(() => setLoading(false));
     }, [workspaceId]);
 
-    if (!workspaceId) return <div style={{ padding: 40, color: "var(--cl-foreground)" }}>Loading...</div>;
-    if (loading) return <div style={{ padding: 40, color: "var(--cl-foreground)" }}>Loading analytics...</div>;
-
-    if (incidents.length === 0) {
+    if (loading) {
         return (
-            <div>
+            <div className="min-h-screen bg-[#FAF8F5]">
+                <TopBar title="Analytics" subtitle="Loading analytics..." />
+                <div className="p-8 max-w-7xl mx-auto grid gap-4 animate-pulse">
+                    <div className="h-64 bg-neutral-200/60 rounded-2xl" />
+                    <div className="h-64 bg-neutral-200/60 rounded-2xl" />
+                </div>
+            </div>
+        );
+    }
+
+    if (!workspaceId || incidents.length === 0) {
+        return (
+            <div className="min-h-screen bg-[#FAF8F5]">
                 <TopBar title="Analytics" subtitle="Historical trends and recurring failure analysis" />
-                <div style={{ padding: "60px 20px", textAlign: "center", background: "var(--cl-muted)", border: "1px dashed var(--cl-border)", borderRadius: 16, margin: 24 }}>
-                    <div style={{ width: 64, height: 64, borderRadius: 16, background: "rgba(37,99,235,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
-                        <AlertTriangle size={32} color="#60A5FA" />
+                <div className="max-w-xl mx-auto mt-16 bg-white rounded-3xl border border-[#EFE9E1] shadow-sm p-12 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center mx-auto mb-4">
+                        <BarChart2 className="w-7 h-7" />
                     </div>
-                    <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--cl-foreground)", marginBottom: 8 }}>No data available yet</h2>
-                    <p style={{ fontSize: 14, color: "var(--cl-muted-foreground)", maxWidth: 400, margin: "0 auto 24px", lineHeight: 1.6 }}>Analytics will populate once you start logging incidents for this workspace.</p>
+                    <h2 className="text-lg font-bold text-[#111827] font-heading mb-2">No data available yet</h2>
+                    <p className="text-sm text-neutral-500">
+                        {workspaceId ? "Analytics will populate once you start logging incidents for this workspace." : "Please select a workspace first."}
+                    </p>
                 </div>
             </div>
         );
@@ -62,41 +89,36 @@ export default function AnalyticsPage() {
     const compMap = new Map<string, any>();
     incidents.forEach(inc => {
         const comp = inc.systemComponent || "General";
-        if (!compMap.has(comp)) compMap.set(comp, { component: comp, p: 0, s: 0, h: 0, c: 0, count: 0 });
-        const entry = compMap.get(comp);
-        entry.count++;
-        if (inc.environment === "production") entry.p++;
-        else if (inc.environment === "staging") entry.s++;
-        else entry.c++;
-        if (inc.severity === "high" || inc.severity === "critical") entry.h++;
+        if (!compMap.has(comp)) compMap.set(comp, { component: comp, critical: 0, high: 0, medium: 0, low: 0, count: 0, last: 0 });
+        const e = compMap.get(comp);
+        e.count++;
+        if (e[inc.severity] !== undefined) e[inc.severity]++;
+        e.last = Math.max(e.last, new Date(inc.detectedAt).getTime());
     });
 
     const frequencyData = Array.from(compMap.values());
     const recurringPatterns = frequencyData.map(f => ({
         component: f.component,
         occurrences: f.count,
-        riskScore: Math.min(100, f.count * 15 + f.h * 20),
-        lastOccurrence: "Recent"
-    })).sort((a, b) => b.occurrences - a.occurrences);
+        riskScore: Math.min(100, f.count * 15 + (f.high + f.critical) * 20),
+        lastOccurrence: new Date(f.last).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    })).sort((a, b) => b.riskScore - a.riskScore);
 
-    // Generate actual cumulative trend data
-    const trendMap = new Map<string, any[]>();
+    const trendMap = new Map<string, { ts: number; items: any[] }>();
     incidents.forEach(inc => {
         const d = new Date(inc.detectedAt);
-        const dayStr = `${d.getMonth() + 1}/${d.getDate()}`;
-        if (!trendMap.has(dayStr)) trendMap.set(dayStr, []);
-        trendMap.get(dayStr)!.push(inc);
+        const key = d.toDateString();
+        if (!trendMap.has(key)) trendMap.set(key, { ts: new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(), items: [] });
+        trendMap.get(key)!.items.push(inc);
     });
 
-    const sortedDays = Array.from(trendMap.keys()).sort((a, b) => {
-        const [am, ad] = a.split('/').map(Number);
-        const [bm, bd] = b.split('/').map(Number);
-        return am === bm ? ad - bd : am - bm;
-    });
+    // Sort by real timestamp (fixes month/year rollover ordering)
+    const sortedDays = Array.from(trendMap.values()).sort((a, b) => a.ts - b.ts);
 
     let cumulative: any[] = [];
-    const realTrendData = sortedDays.map(day => {
-        cumulative = cumulative.concat(trendMap.get(day));
+    const trendData = sortedDays.map(({ ts, items }) => {
+        cumulative = cumulative.concat(items);
+        const label = new Date(ts).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
         const resolved = cumulative.filter((i: any) => i.resolvedAt);
         const mttr = resolved.length > 0
@@ -113,119 +135,102 @@ export default function AnalyticsPage() {
             mtbf = Math.max(0.1, Math.round((gaps / (sorted.length - 1)) * 10) / 10);
         }
 
-        const sevScore = cumulative.reduce((acc, i) => acc + (i.severity === 'critical' ? 3 : i.severity === 'high' ? 2 : i.severity === 'medium' ? 1 : 0.5), 0);
+        const sevScore = cumulative.reduce((acc, i) => acc + (i.severity === "critical" ? 3 : i.severity === "high" ? 2 : i.severity === "medium" ? 1 : 0.5), 0);
         const downtime = Math.min(cumulative.reduce((acc, i) => acc + (i.downtimeMinutes || 0), 0) / 1440, 10);
         const risk = Math.min(100, Math.round(((sevScore + downtime * 2) / (cumulative.length * 3 + 20)) * 100));
 
-        return { week: day, mttr, mtbf, risk };
+        return { week: label, mttr, mtbf, risk };
     });
 
-    const mttrTrend = realTrendData.length > 0 ? realTrendData : [{ week: "Current", mttr: 0 }];
-    const mtbfTrend = realTrendData.length > 0 ? realTrendData : [{ week: "Current", mtbf: 0 }];
-    const riskTrend = realTrendData.length > 0 ? realTrendData : [{ week: "Current", risk: 0 }];
     return (
-        <div>
+        <div className="min-h-screen bg-[#FAF8F5] pb-16">
             <TopBar title="Analytics" subtitle="Historical trends and recurring failure analysis" />
-            <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
+            <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
 
-                {/* MTTR & MTBF Row */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                    <div className="chart-card">
-                        <h3 className="chart-title">MTTR Trend <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 400 }}>(minutes)</span></h3>
-                        <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>Mean time to recover — lower is better</p>
-                        <ResponsiveContainer width="100%" height={200}>
-                            <AreaChart data={mttrTrend}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className={card}>
+                        <ChartHeader title="MTTR Trend" unit="minutes" desc="Mean time to recover — lower is better" />
+                        <ResponsiveContainer width="100%" height={220}>
+                            <AreaChart data={trendData} margin={{ left: -20, right: 8 }}>
                                 <defs>
                                     <linearGradient id="mttrGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#2563EB" stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#FA5A2A" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#FA5A2A" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                                <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                                <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #E2E8F0", fontSize: 12 }} formatter={(v) => [`${v} min`, "MTTR"]} />
-                                <Area type="monotone" dataKey="mttr" stroke="#2563EB" strokeWidth={2.5} fill="url(#mttrGrad)" dot={{ r: 3, fill: "#2563EB" }} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                                <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
+                                <YAxis tick={axisTick} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, "MTTR"]} />
+                                <Area type="monotone" dataKey="mttr" stroke="#FA5A2A" strokeWidth={3} fill="url(#mttrGrad)" dot={{ r: 4, fill: "#fff", stroke: "#FA5A2A", strokeWidth: 2 }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
 
-                    <div className="chart-card">
-                        <h3 className="chart-title">MTBF Trend <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 400 }}>(hours)</span></h3>
-                        <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>Mean time between failures — higher is better</p>
-                        <ResponsiveContainer width="100%" height={200}>
-                            <AreaChart data={mtbfTrend}>
+                    <div className={card}>
+                        <ChartHeader title="MTBF Trend" unit="hours" desc="Mean time between failures — higher is better" />
+                        <ResponsiveContainer width="100%" height={220}>
+                            <AreaChart data={trendData} margin={{ left: -20, right: 8 }}>
                                 <defs>
                                     <linearGradient id="mtbfGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                                <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                                <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #E2E8F0", fontSize: 12 }} formatter={(v) => [`${v}h`, "MTBF"]} />
-                                <Area type="monotone" dataKey="mtbf" stroke="#22C55E" strokeWidth={2.5} fill="url(#mtbfGrad)" dot={{ r: 3, fill: "#22C55E" }} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                                <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
+                                <YAxis tick={axisTick} axisLine={false} tickLine={false} />
+                                <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v}h`, "MTBF"]} />
+                                <Area type="monotone" dataKey="mtbf" stroke="#10B981" strokeWidth={3} fill="url(#mtbfGrad)" dot={{ r: 4, fill: "#fff", stroke: "#10B981", strokeWidth: 2 }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Risk Index Trend */}
-                <div className="chart-card">
-                    <h3 className="chart-title">Operational Risk Index Trend</h3>
-                    <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>Lower risk score indicates better operational health</p>
-                    <ResponsiveContainer width="100%" height={180}>
-                        <LineChart data={riskTrend}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-                            <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                            <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                            <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #E2E8F0", fontSize: 12 }} formatter={(v) => [`${v}/100`, "Risk Index"]} />
-                            <Line type="monotone" dataKey="risk" stroke="#7C3AED" strokeWidth={2.5} dot={{ r: 3, fill: "#7C3AED" }} />
+                <div className={card}>
+                    <ChartHeader title="Operational Risk Index Trend" desc="Lower risk score indicates better operational health" />
+                    <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={trendData} margin={{ left: -20, right: 8 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                            <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
+                            <YAxis domain={[0, 100]} tick={axisTick} axisLine={false} tickLine={false} />
+                            <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v}/100`, "Risk Index"]} />
+                            <Line type="monotone" dataKey="risk" stroke="#8B5CF6" strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: "#8B5CF6", strokeWidth: 2 }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
 
-                {/* Incident Frequency by Component */}
-                <div className="chart-card">
-                    <h3 className="chart-title">Incident Frequency by Component</h3>
-                    <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>Stacked by environment type</p>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <BarChart data={frequencyData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-                            <XAxis dataKey="component" tick={{ fontSize: 12, fill: "#475569" }} />
-                            <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} />
-                            <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #E2E8F0", fontSize: 12 }} />
+                <div className={card}>
+                    <ChartHeader title="Incident Frequency by Component" desc="Stacked by severity" />
+                    <ResponsiveContainer width="100%" height={240}>
+                        <BarChart data={frequencyData} margin={{ left: -20, right: 8 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                            <XAxis dataKey="component" tick={{ fontSize: 12, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                            <YAxis tick={axisTick} allowDecimals={false} axisLine={false} tickLine={false} />
+                            <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(250,90,42,0.05)" }} />
                             <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
-                            <Bar dataKey="p" name="Production" stackId="a" fill="#EF4444" radius={[0, 0, 0, 0]} />
-                            <Bar dataKey="h" name="High Sev" stackId="a" fill="#F97316" />
-                            <Bar dataKey="s" name="Staging" stackId="a" fill="#F59E0B" />
-                            <Bar dataKey="c" name="Dev" stackId="a" fill="#94A3B8" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="critical" name="Critical" stackId="a" fill="#EF4444" />
+                            <Bar dataKey="high" name="High" stackId="a" fill="#FA5A2A" />
+                            <Bar dataKey="medium" name="Medium" stackId="a" fill="#F59E0B" />
+                            <Bar dataKey="low" name="Low" stackId="a" fill="#CBD5E1" radius={[6, 6, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
 
-                {/* Recurring Patterns */}
-                <div className="chart-card">
-                    <h3 className="chart-title">🔁 Recurring Failure Patterns</h3>
-                    <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 16 }}>Components with repeated incident history — high risk scores require immediate attention</p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div className={card}>
+                    <ChartHeader title="Recurring Failure Patterns" desc="Components with repeated incident history — high risk scores need attention" />
+                    <div className="flex flex-col gap-4">
                         {recurringPatterns.map((p) => (
-                            <div key={p.component} style={{ display: "grid", gridTemplateColumns: "160px 80px 1fr 100px", alignItems: "center", gap: 16 }}>
-                                <span style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>{p.component}</span>
-                                <span style={{ fontSize: 12, color: "#64748B" }}>{p.occurrences} incidents</span>
-                                <RiskBar value={p.riskScore} />
-                                <span style={{ fontSize: 11, color: "#94A3B8", textAlign: "right" }}>last: {p.lastOccurrence}</span>
+                            <div key={p.component} className="grid grid-cols-2 sm:grid-cols-[160px_90px_1fr_90px] items-center gap-3 sm:gap-4">
+                                <span className="text-sm font-bold text-[#111827] truncate">{p.component}</span>
+                                <span className="text-xs text-neutral-500">{p.occurrences} incident{p.occurrences === 1 ? "" : "s"}</span>
+                                <div className="col-span-2 sm:col-span-1 order-last sm:order-none"><RiskBar value={p.riskScore} /></div>
+                                <span className="text-[11px] text-neutral-400 text-right">last: {p.lastOccurrence}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-
-            <style jsx>{`
-        .chart-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; }
-        .chart-title { font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 4px; }
-      `}</style>
         </div>
     );
 }

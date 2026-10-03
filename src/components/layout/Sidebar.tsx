@@ -1,12 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, AlertTriangle, CheckSquare, BarChart2, Settings, ShieldAlert, Zap,
-  ChevronDown, Building2
+  LayoutDashboard,
+  AlertTriangle,
+  CheckSquare,
+  BarChart2,
+  Settings,
+  Zap,
+  ChevronDown,
+  Building2,
+  LogOut,
+  ExternalLink,
+  ChevronRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -18,7 +29,8 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [currentWs, setCurrentWs] = useState({ id: "", name: "My Workspace" });
+  const { user } = useUser();
+  const [currentWs, setCurrentWs] = useState({ id: "", name: "Production Workspace" });
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [openWsMenu, setOpenWsMenu] = useState(false);
 
@@ -33,109 +45,161 @@ export function Sidebar() {
 
     fetch("/api/workspace")
       .then(r => r.json())
-      .then(d => { if (d.workspaces) setWorkspaces(d.workspaces); })
+      .then(d => {
+        if (d.workspaces && d.workspaces.length > 0) {
+          setWorkspaces(d.workspaces);
+          // If no current selected, default to first
+          const savedId = localStorage.getItem("cl_workspace_id");
+          if (!savedId) {
+            const first = d.workspaces[0];
+            localStorage.setItem("cl_workspace_id", first.id);
+            localStorage.setItem("cl_workspace", JSON.stringify({ name: first.name, slug: first.slug }));
+            setCurrentWs({ id: first.id, name: first.name });
+          }
+        }
+      })
       .catch(console.error);
   }, []);
 
   const handleSwitch = (ws: any) => {
     localStorage.setItem("cl_workspace_id", ws.id);
     localStorage.setItem("cl_workspace", JSON.stringify({ name: ws.name, slug: ws.slug }));
-    window.location.href = "/dashboard";
+    setCurrentWs({ id: ws.id, name: ws.name });
+    setOpenWsMenu(false);
+    window.location.reload();
   };
 
   return (
-    <>
-      <aside style={{
-        width: 240, minHeight: "100vh", background: "var(--cl-muted)",
-        borderRight: "1px solid var(--cl-border)", display: "flex",
-        flexDirection: "column", position: "fixed", left: 0, top: 0, bottom: 0, zIndex: 40,
-      }}>
-        {/* Logo & Workspace Switcher */}
-        <div style={{ padding: "18px 16px 14px", borderBottom: "1px solid var(--cl-border)", position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => setOpenWsMenu(!openWsMenu)}>
-            <div style={{ width: 32, height: 32, background: "linear-gradient(135deg, #2563EB, #7C3AED)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <ShieldAlert size={16} color="#fff" />
+    <aside className="w-64 min-h-screen bg-[#111826] text-white flex flex-col fixed left-0 top-0 bottom-0 z-40 border-r border-white/10 selection:bg-[#FA5A2A]/30">
+      
+      {/* Brand & Workspace Switcher */}
+      <div className="p-4 border-b border-white/10 relative">
+        <div 
+          onClick={() => setOpenWsMenu(!openWsMenu)}
+          className="flex items-center gap-3 p-2 rounded-2xl hover:bg-white/5 cursor-pointer transition-colors"
+        >
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between">
+              <Logo variant="light" tone="brand" size={30} href={null} />
+              <ChevronDown className={`w-3.5 h-3.5 text-neutral-400 transition-transform ${openWsMenu ? 'rotate-180' : ''}`} />
             </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <p style={{ fontSize: 14, fontWeight: 800, color: "var(--cl-foreground)", lineHeight: 1, fontFamily: "'Space Grotesk', sans-serif" }}>CrashLedger</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                <p style={{ fontSize: 11, color: "var(--cl-muted-foreground)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{currentWs.name}</p>
-                <ChevronDown size={12} color="var(--cl-muted-foreground)" />
-              </div>
-            </div>
+            <p className="text-[11px] font-medium text-neutral-400 truncate mt-1.5">
+              {currentWs.name}
+            </p>
           </div>
-          {openWsMenu && (
-            <div style={{ position: "absolute", top: "100%", left: 8, right: 8, background: "var(--cl-background)", border: "1px solid var(--cl-border)", borderRadius: 10, padding: 6, zIndex: 100, boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
+        </div>
+
+        {/* Workspace Dropdown */}
+        {openWsMenu && (
+          <div className="absolute top-full left-3 right-3 mt-1 bg-[#1A2234] border border-white/15 rounded-2xl p-2 z-50 shadow-2xl backdrop-blur-xl">
+            <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+              Switch Workspace
+            </div>
+            <div className="max-h-48 overflow-y-auto space-y-1 my-1">
               {workspaces.map((ws) => (
                 <button
                   key={ws.id}
                   onClick={() => handleSwitch(ws)}
-                  style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "8px 10px", background: "none", border: "none", borderRadius: 6, cursor: "pointer", color: "var(--cl-foreground)", textAlign: "left" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "none"; }}
+                  className={`w-full flex items-center justify-between p-2 rounded-xl text-left text-xs transition-colors ${
+                    ws.id === currentWs.id ? 'bg-[#FA5A2A] text-white font-bold' : 'text-neutral-300 hover:bg-white/10'
+                  }`}
                 >
-                  <Building2 size={13} color="#60A5FA" />
-                  <span style={{ fontSize: 13, fontWeight: ws.id === currentWs.id ? 700 : 500 }}>{ws.name}</span>
+                  <div className="flex items-center gap-2 truncate">
+                    <Building2 className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{ws.name}</span>
+                  </div>
+                  {ws.id === currentWs.id && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                 </button>
               ))}
-              <div style={{ height: 1, background: "var(--cl-border)", margin: "4px 0" }} />
-              <Link href="/workspace-select" style={{ display: "block", width: "100%", padding: "8px 10px", fontSize: 12, color: "#60A5FA", textDecoration: "none", textAlign: "center", fontWeight: 600 }}>
-                Manage Workspaces →
-              </Link>
             </div>
-          )}
-        </div>
-
-        {/* Nav */}
-        <nav style={{ flex: 1, padding: "12px 10px", overflowY: "auto" }}>
-          <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: "var(--cl-muted-foreground)", textTransform: "uppercase", padding: "0 6px", marginBottom: 8 }}>
-            Navigation
-          </p>
-          {navItems.map(({ label, href, icon: Icon }) => {
-            const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
-            return (
-              <Link key={href} href={href} style={{
-                display: "flex", alignItems: "center", gap: 9, padding: "9px 10px",
-                borderRadius: 8, fontSize: 14, fontWeight: isActive ? 600 : 500,
-                color: isActive ? "#60A5FA" : "var(--cl-muted-foreground)",
-                background: isActive ? "rgba(59, 130, 246, 0.1)" : "transparent",
-                textDecoration: "none", marginBottom: 2,
-                transition: "all 0.15s ease",
-              }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255, 255, 255, 0.05)";
-                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--cl-foreground)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
-                    (e.currentTarget as HTMLAnchorElement).style.color = "var(--cl-muted-foreground)";
-                  }
-                }}
-              >
-                <Icon size={16} strokeWidth={isActive ? 2.5 : 2} style={{ flexShrink: 0 }} />
-                <span style={{ flexShrink: 0 }}>{label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Upgrade banner */}
-        <div style={{ padding: 12, borderTop: "1px solid var(--cl-border)" }}>
-          <div style={{ background: "linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05))", border: "1px solid rgba(245, 158, 11, 0.2)", borderRadius: 10, padding: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-              <Zap size={13} color="#F59E0B" />
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#FDE68A" }}>Free Plan</span>
-            </div>
-            <p style={{ fontSize: 11, color: "#FCD34D", marginBottom: 8, lineHeight: 1.4, opacity: 0.8 }}>10 incidents/month. Upgrade for unlimited.</p>
-            <Link href="/dashboard/settings" style={{ display: "block", textAlign: "center", background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#fff", fontSize: 12, fontWeight: 600, padding: "7px 12px", borderRadius: 7, textDecoration: "none" }}>
-              Upgrade to Pro
+            <div className="h-px bg-white/10 my-1" />
+            <Link
+              href="/workspace-select"
+              className="flex items-center justify-between p-2 text-xs font-semibold text-[#FA5A2A] hover:bg-[#FA5A2A]/10 rounded-xl transition-colors"
+            >
+              <span>Manage all workspaces</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </Link>
           </div>
+        )}
+      </div>
+
+      {/* Nav List (Elegent Sidebar Style) */}
+      <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+        <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+          Main Menu
         </div>
-      </aside>
-    </>
+
+        {navItems.map(({ label, href, icon: Icon }) => {
+          const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                isActive
+                  ? "bg-[#FA5A2A] text-white shadow-lg shadow-[#FA5A2A]/30 translate-x-0.5"
+                  : "text-neutral-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-neutral-400'}`} />
+                <span>{label}</span>
+              </div>
+              {isActive && (
+                <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Upgrade Banner (Pro) */}
+      <div className="p-3 m-3 rounded-2xl bg-gradient-to-br from-[#1E2738] to-[#171E2D] border border-white/10">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <Zap className="w-3.5 h-3.5" />
+          </div>
+          <span className="text-xs font-bold text-amber-300">Free Tier</span>
+        </div>
+        <p className="text-[11px] text-neutral-400 mb-3 leading-tight">
+          Unlock unlimited postmortems, MTBF trends & team roles.
+        </p>
+        <Link
+          href="/dashboard/settings"
+          className="block w-full py-2 rounded-xl text-center text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-md shadow-[#FA5A2A]/20 transition-opacity"
+        >
+          Upgrade to Pro
+        </Link>
+      </div>
+
+      {/* User / Logout Rail (Image 2 Elegent style) */}
+      <div className="p-3 border-t border-white/10 flex items-center justify-between">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-full bg-[#FA5A2A]/20 text-[#FA5A2A] border border-[#FA5A2A]/40 flex items-center justify-center font-bold text-xs shrink-0">
+            {user?.firstName ? user.firstName.charAt(0) : "CL"}
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-white truncate">
+              {user?.fullName || "Engineering Lead"}
+            </p>
+            <p className="text-[10px] text-neutral-400 truncate">
+              {user?.primaryEmailAddress?.emailAddress || "Responder"}
+            </p>
+          </div>
+        </div>
+
+        <SignOutButton>
+          <button
+            title="Sign Out"
+            className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </SignOutButton>
+      </div>
+
+    </aside>
   );
 }

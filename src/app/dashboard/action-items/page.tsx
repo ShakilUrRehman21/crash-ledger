@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { TopBar } from "@/components/layout/TopBar";
-import { Plus, AlertTriangle, Clock, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
+import { AlertTriangle, Clock, CheckCircle2, AlertCircle, ChevronRight, FolderOpen } from "lucide-react";
 import Link from "next/link";
 
 const COLUMNS = [
-    { key: "todo", label: "To Do", color: "#94A3B8", bg: "rgba(148, 163, 184, 0.1)" },
-    { key: "in_progress", label: "In Progress", color: "#FBBF24", bg: "rgba(251, 191, 36, 0.1)" },
-    { key: "done", label: "Done", color: "#4ADE80", bg: "rgba(74, 222, 128, 0.1)" },
+    { key: "todo", label: "To Do", color: "#64748B", bg: "#F1F5F9" },
+    { key: "in_progress", label: "In Progress", color: "#EA580C", bg: "#FFF7ED" },
+    { key: "done", label: "Done", color: "#059669", bg: "#ECFDF5" },
 ] as const;
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -36,155 +36,142 @@ export default function ActionItemsPage() {
     }, [workspaceId]);
 
     function advanceStatus(id: string) {
+        const target = items.find((a) => a.id === id);
+        if (!target) return;
         const cycle = ["todo", "in_progress", "done"];
-        setItems(prev => prev.map(a => {
-            if (a.id !== id) return a;
-            const newStatus = cycle[(cycle.indexOf(a.status) + 1) % cycle.length];
+        const newStatus = cycle[(cycle.indexOf(target.status) + 1) % cycle.length];
+        const oldStatus = target.status;
 
-            // Fire API call asynchronously
-            fetch(`/api/action-items/${a.id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: newStatus, workspaceId })
-            }).catch(console.error);
+        setItems(prev => prev.map(a => (a.id === id ? { ...a, status: newStatus } : a)));
 
-            return { ...a, status: newStatus };
-        }));
+        fetch(`/api/action-items/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus, workspaceId })
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Update failed");
+            })
+            .catch((e) => {
+                console.error(e);
+                setItems(prev => prev.map(a => (a.id === id ? { ...a, status: oldStatus } : a)));
+            });
     }
 
+    const isOverdueFn = (i: any) => i.dueDate && new Date(i.dueDate) < new Date() && i.status !== "done";
+
     const filtered = items.filter((i) => {
-        const isOverdue = i.dueDate && new Date(i.dueDate) < new Date() && i.status !== "done";
-        if (filter === "overdue") return isOverdue;
+        if (filter === "overdue") return isOverdueFn(i);
         if (filter === "unassigned") return !i.assignedTo;
         return true;
     });
 
     if (!workspaceId) {
-        return <div style={{ padding: 40, color: "var(--cl-foreground)" }}>Please select a workspace.</div>;
+        return (
+            <div className="min-h-screen bg-[#FAF8F5]">
+                <TopBar title="Action Items" />
+                <div className="p-12 text-center text-sm text-neutral-500">Please select a workspace.</div>
+            </div>
+        );
     }
 
+    const summary = [
+        { label: "Total Tasks", val: items.length, color: "#0284C7", bg: "#E0F2FE", icon: AlertTriangle },
+        { label: "In Progress", val: items.filter((i) => i.status === "in_progress").length, color: "#EA580C", bg: "#FFF2EC", icon: Clock },
+        { label: "Completed", val: items.filter((i) => i.status === "done").length, color: "#059669", bg: "#D1FAE5", icon: CheckCircle2 },
+        { label: "Overdue", val: items.filter(isOverdueFn).length, color: "#DC2626", bg: "#FEE2E2", icon: AlertCircle },
+    ];
+
     return (
-        <div>
+        <div className="min-h-screen bg-[#FAF8F5] pb-16">
             <TopBar title="Action Items" subtitle="Track remediation tasks across all incidents" showCreateIncident workspaceId={workspaceId} />
-            <div style={{ padding: 24 }}>
-                {/* Summary row */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
-                    {[
-                        { label: "Total Tasks", val: items.length, color: "#60A5FA", icon: AlertTriangle },
-                        { label: "In Progress", val: items.filter((i) => i.status === "in_progress").length, color: "#FBBF24", icon: Clock },
-                        { label: "Completed", val: items.filter((i) => i.status === "done").length, color: "#4ADE80", icon: CheckCircle2 },
-                        { label: "Overdue", val: items.filter((i) => i.dueDate && new Date(i.dueDate) < new Date() && i.status !== "done").length, color: "#F87171", icon: AlertCircle },
-                    ].map(({ label, val, color, icon: Icon }) => (
-                        <div key={label} style={{ background: "var(--cl-muted)", border: "1px solid var(--cl-border)", borderRadius: 10, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12 }}>
-                            <div style={{ width: 36, height: 36, borderRadius: 8, background: color + "18", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 12px ${color}40` }}>
-                                <Icon size={16} color={color} />
+            <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {summary.map(({ label, val, color, bg, icon: Icon }) => (
+                        <div key={label} className="bg-white rounded-2xl border border-[#EFE9E1] shadow-sm p-4 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: bg, color }}>
+                                <Icon className="w-5 h-5" />
                             </div>
                             <div>
-                                <p style={{ fontSize: 20, fontWeight: 800, color: "var(--cl-foreground)", fontFamily: "'Space Grotesk', sans-serif" }}>{val}</p>
-                                <p style={{ fontSize: 12, color: "var(--cl-muted-foreground)" }}>{label}</p>
+                                <p className="text-2xl font-extrabold text-[#111827] font-heading leading-none">{val}</p>
+                                <p className="text-xs text-neutral-500 mt-1 font-medium">{label}</p>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Filters */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+                <div className="flex flex-wrap gap-2">
                     {[
                         { key: "all", label: "All" },
-                        { key: "overdue", label: "🔴 Overdue" },
+                        { key: "overdue", label: "Overdue" },
                         { key: "unassigned", label: "Unassigned" },
                     ].map(({ key, label }) => (
                         <button
                             key={key}
                             onClick={() => setFilter(key)}
-                            style={{
-                                padding: "6px 14px",
-                                borderRadius: 8,
-                                border: "1px solid",
-                                borderColor: filter === key ? "#3B82F6" : "var(--cl-border)",
-                                background: filter === key ? "rgba(59, 130, 246, 0.15)" : "var(--cl-muted)",
-                                color: filter === key ? "#60A5FA" : "var(--cl-muted-foreground)",
-                                fontSize: 13, fontWeight: 500, cursor: "pointer",
-                                transition: "all 0.2s"
-                            }}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${filter === key ? "bg-[#FA5A2A] text-white border-[#FA5A2A] shadow-md shadow-[#FA5A2A]/20" : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300"}`}
                         >
                             {label}
                         </button>
                     ))}
                 </div>
 
-                {/* Kanban Board */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     {COLUMNS.map((col) => {
                         const colItems = filtered.filter((i) => i.status === col.key);
                         return (
-                            <div key={col.key}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: col.color }} />
-                                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--cl-foreground)" }}>{col.label}</span>
-                                    <span style={{ marginLeft: 4, background: col.bg, color: col.color, padding: "1px 7px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{colItems.length}</span>
+                            <div key={col.key} className="bg-[#F4EFEB]/60 rounded-2xl p-3">
+                                <div className="flex items-center gap-2 mb-3 px-1">
+                                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: col.color }} />
+                                    <span className="text-sm font-bold text-[#111827] font-heading">{col.label}</span>
+                                    <span className="ml-1 px-2 py-0.5 rounded-full text-[11px] font-bold" style={{ background: col.bg, color: col.color }}>{colItems.length}</span>
                                 </div>
-                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                <div className="flex flex-col gap-3">
+                                    {colItems.length === 0 && (
+                                        <p className="text-xs text-neutral-400 text-center py-6">Nothing here</p>
+                                    )}
                                     {colItems.map((item) => {
                                         const inc = item.incident;
-                                        const isOverdue = item.dueDate && new Date(item.dueDate) < new Date() && item.status !== "done";
-
+                                        const overdue = isOverdueFn(item);
+                                        const pc = PRIORITY_COLORS[item.priority] ?? "#64748B";
                                         return (
                                             <div
                                                 key={item.id}
-                                                style={{
-                                                    background: "var(--cl-muted)",
-                                                    border: "1px solid var(--cl-border)",
-                                                    borderLeft: `3px solid ${PRIORITY_COLORS[item.priority]}`,
-                                                    borderRadius: 10,
-                                                    padding: "14px",
-                                                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                                                    position: "relative",
-                                                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.transform = "translateY(-2px)";
-                                                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
-                                                    e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.4)";
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.transform = "none";
-                                                    e.currentTarget.style.borderColor = "var(--cl-border)";
-                                                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
-                                                }}
+                                                className="bg-white rounded-xl border border-[#EFE9E1] p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+                                                style={{ borderLeft: `4px solid ${pc}` }}
                                             >
-                                                {isOverdue && (
-                                                    <span style={{ background: "rgba(220, 38, 38, 0.15)", color: "#FCA5A5", border: "1px solid rgba(220, 38, 38, 0.3)", fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20, display: "inline-block", marginBottom: 6 }}>⚠ OVERDUE</span>
+                                                {overdue && (
+                                                    <span className="inline-block mb-2 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-50 text-red-600 border border-red-200">OVERDUE</span>
                                                 )}
-                                                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--cl-foreground)", lineHeight: 1.4, marginBottom: 10 }}>{item.title}</p>
+                                                <p className="text-sm font-bold text-[#111827] leading-snug mb-2">{item.title}</p>
 
                                                 {inc && (
-                                                    <Link href={`/dashboard/incidents/${inc.id}`} style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "#60A5FA", marginBottom: 8, textDecoration: "none", fontWeight: 500 }}>
-                                                        📁 {inc.title.length > 25 ? inc.title.substring(0, 25) + '...' : inc.title} <ChevronRight size={12} />
+                                                    <Link href={`/dashboard/incidents/${inc.id}`} className="flex items-center gap-1 text-[11px] font-semibold text-[#FA5A2A] mb-3 hover:underline">
+                                                        <FolderOpen className="w-3 h-3 shrink-0" />
+                                                        <span className="truncate">{inc.title}</span>
+                                                        <ChevronRight className="w-3 h-3 shrink-0" />
                                                     </Link>
                                                 )}
 
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                                                    <span style={{ background: PRIORITY_COLORS[item.priority] + "20", color: PRIORITY_COLORS[item.priority], border: `1px solid ${PRIORITY_COLORS[item.priority]}40`, padding: "2px 7px", borderRadius: 20, fontSize: 10, fontWeight: 600, textTransform: "capitalize" }}>
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: pc + "15", color: pc, border: `1px solid ${pc}40` }}>
                                                         {item.priority}
                                                     </span>
-                                                    <span style={{ fontSize: 11, color: isOverdue ? "#FCA5A5" : "var(--cl-muted-foreground)" }}>
-                                                        {item.assignedUser ? `👤 ${item.assignedUser.fullName.split(" ")[0]}` : "Unassigned"}
+                                                    <span className="text-[11px] text-neutral-500 font-medium">
+                                                        {item.assignedUser ? (item.assignedUser.fullName || "Assigned").split(" ")[0] : "Unassigned"}
                                                     </span>
                                                 </div>
 
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 8, marginTop: 8 }}>
+                                                <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
                                                     {item.dueDate ? (
-                                                        <span style={{ fontSize: 10, color: isOverdue ? "#FCA5A5" : "var(--cl-muted-foreground)" }}>Due: {new Date(item.dueDate).toLocaleDateString()}</span>
+                                                        <span className={`text-[11px] font-medium ${overdue ? "text-red-500" : "text-neutral-400"}`}>Due {new Date(item.dueDate).toLocaleDateString()}</span>
                                                     ) : <span />}
-
                                                     <button
                                                         onClick={() => advanceStatus(item.id)}
-                                                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "4px 8px", fontSize: 10, fontWeight: 600, cursor: "pointer", color: "var(--cl-foreground)", transition: "all 0.2s" }}
-                                                        onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
-                                                        onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                                                        className="px-3 py-1 rounded-full text-[11px] font-bold border border-neutral-200 text-neutral-700 hover:bg-[#FFF2EC] hover:border-[#FA5A2A] hover:text-[#FA5A2A] transition-all"
                                                     >
-                                                        {item.status === "done" ? "↺ Reopen" : "Advance →"}
+                                                        {item.status === "done" ? "Reopen" : "Advance →"}
                                                     </button>
                                                 </div>
                                             </div>

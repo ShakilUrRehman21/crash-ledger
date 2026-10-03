@@ -2,7 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldAlert, Plus, ArrowRight, Building2 } from "lucide-react";
+import { SignOutButton } from "@clerk/nextjs";
+import { Plus, ArrowRight, Building2, LogOut } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
+
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all";
+
+function errorMessage(err: any, fallback: string): string {
+    if (!err) return fallback;
+    if (typeof err === "string") return err;
+    if (err.formErrors?.[0]) return err.formErrors[0];
+    if (err.fieldErrors) {
+        const first = Object.keys(err.fieldErrors)[0];
+        if (first) return `${first}: ${err.fieldErrors[first][0]}`;
+    }
+    return fallback;
+}
 
 export default function WorkspaceSelectorPage() {
     const router = useRouter();
@@ -11,17 +26,15 @@ export default function WorkspaceSelectorPage() {
     const [slug, setSlug] = useState("");
     const [workspaces, setWorkspaces] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [creating, setCreating] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
         fetch("/api/workspace")
             .then(res => res.json())
             .then(data => {
-                if (data.workspaces) {
+                if (data.workspaces && data.workspaces.length > 0) {
                     setWorkspaces(data.workspaces);
-                    if (data.workspaces.length === 0) {
-                        setShowCreate(true);
-                    }
                 } else {
                     setShowCreate(true);
                 }
@@ -29,6 +42,7 @@ export default function WorkspaceSelectorPage() {
             })
             .catch(err => {
                 console.error(err);
+                setShowCreate(true);
                 setLoading(false);
             });
     }, []);
@@ -43,8 +57,10 @@ export default function WorkspaceSelectorPage() {
     };
 
     const handleCreate = async () => {
+        if (!name.trim() || !slug.trim()) return setError("Name and slug are required.");
         try {
             setError("");
+            setCreating(true);
             const res = await fetch("/api/workspace/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -53,7 +69,8 @@ export default function WorkspaceSelectorPage() {
             const data = await res.json();
 
             if (!res.ok) {
-                setError(data.error || "Failed to create workspace");
+                setError(errorMessage(data.error, "Failed to create workspace"));
+                setCreating(false);
                 return;
             }
 
@@ -62,95 +79,98 @@ export default function WorkspaceSelectorPage() {
             router.push("/dashboard");
         } catch (err: any) {
             setError(err.message);
+            setCreating(false);
         }
     };
 
     if (loading) {
-        return <div style={{ minHeight: "100vh", background: "var(--cl-background)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--cl-foreground)" }}>Loading...</div>;
+        return (
+            <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center text-sm text-neutral-500">Loading workspaces...</div>
+        );
     }
 
     return (
-        <div style={{ minHeight: "100vh", background: "var(--cl-background)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, fontFamily: "Inter, sans-serif" }}>
-            <div style={{ width: "100%", maxWidth: 480 }}>
-                {/* Logo */}
-                <div style={{ textAlign: "center", marginBottom: 36 }}>
-                    <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #2563EB, #7C3AED)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-                        <ShieldAlert size={22} color="#fff" />
+        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4 sm:p-6">
+            <div className="w-full max-w-lg">
+                <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#FA5A2A] via-[#FF6A3D] to-[#FF8256] text-white text-center px-6 py-10 mb-6 shadow-2xl shadow-[#FA5A2A]/20">
+                    <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
+                    <div className="absolute -bottom-8 -right-4 w-32 h-32 rounded-full bg-white/15" />
+                    <div className="relative">
+                        <div className="flex justify-center mb-4"><Logo variant="light" size={44} href={null} /></div>
+                        <h1 className="text-2xl font-extrabold font-heading">Select a Workspace</h1>
+                        <p className="text-sm text-white/90 mt-1">Choose a workspace to continue to your dashboard</p>
                     </div>
-                    <h1 style={{ fontSize: 22, fontWeight: 800, color: "var(--cl-foreground)" }}>Select a Workspace</h1>
-                    <p style={{ fontSize: 14, color: "var(--cl-muted-foreground)", marginTop: 4 }}>Choose a workspace to continue to your dashboard</p>
                 </div>
 
-                {/* Workspace List */}
                 {workspaces.length > 0 && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+                    <div className="flex flex-col gap-3 mb-4">
                         {workspaces.map((ws) => (
                             <button
                                 key={ws.id}
                                 onClick={() => handleSelect(ws.id)}
-                                style={{ display: "flex", alignItems: "center", gap: 14, background: "var(--cl-muted)", border: "1px solid var(--cl-border)", borderRadius: 12, padding: "16px 18px", cursor: "pointer", transition: "all 0.15s", textAlign: "left", width: "100%", color: "var(--cl-foreground)" }}
-                                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#2563EB"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; }}
-                                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--cl-border)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "none"; }}
+                                className="group flex items-center gap-4 bg-white border border-[#EFE9E1] rounded-2xl p-4 text-left shadow-sm hover:border-[#FA5A2A] hover:shadow-md transition-all w-full"
                             >
-                                <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1))", border: "1px solid rgba(37,99,235,0.2)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <Building2 size={18} color="#60A5FA" />
+                                <div className="w-11 h-11 rounded-xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center shrink-0">
+                                    <Building2 className="w-5 h-5" />
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <p style={{ fontSize: 15, fontWeight: 700 }}>{ws.name}</p>
-                                    <p style={{ fontSize: 12, color: "var(--cl-muted-foreground)", marginTop: 2 }}>{ws.role.toUpperCase()} · {ws.planType.toUpperCase()} plan</p>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold text-[#111827] truncate">{ws.name}</p>
+                                    <p className="text-xs text-neutral-500 mt-0.5 capitalize">{ws.role} · {ws.planType} plan</p>
                                 </div>
-                                <span style={{ background: ws.planType === "pro" ? "rgba(37,99,235,0.1)" : "rgba(255,255,255,0.05)", color: ws.planType === "pro" ? "#60A5FA" : "var(--cl-muted-foreground)", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, textTransform: "uppercase" as const }}>{ws.planType}</span>
-                                <ArrowRight size={14} color="var(--cl-muted-foreground)" />
+                                <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-[#FA5A2A] group-hover:translate-x-0.5 transition-all" />
                             </button>
                         ))}
                     </div>
                 )}
 
-                {/* Create Workspace */}
                 {!showCreate ? (
                     <button
                         onClick={() => setShowCreate(true)}
-                        style={{ width: "100%", border: "1.5px dashed var(--cl-border)", borderRadius: 12, padding: "14px", background: "transparent", color: "var(--cl-muted-foreground)", fontSize: 14, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.15s" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#60A5FA"; (e.currentTarget as HTMLButtonElement).style.color = "#60A5FA"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(37,99,235,0.05)"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--cl-border)"; (e.currentTarget as HTMLButtonElement).style.color = "var(--cl-muted-foreground)"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                        className="w-full border-2 border-dashed border-neutral-300 rounded-2xl py-3.5 text-sm font-semibold text-neutral-500 hover:border-[#FA5A2A] hover:text-[#FA5A2A] hover:bg-[#FFF2EC]/50 flex items-center justify-center gap-2 transition-all"
                     >
-                        <Plus size={16} /> Create New Workspace
+                        <Plus className="w-4 h-4" /> Create New Workspace
                     </button>
                 ) : (
-                    <div style={{ background: "var(--cl-muted)", border: "1px solid var(--cl-border)", borderRadius: 12, padding: 20 }}>
-                        <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--cl-foreground)", marginBottom: 14 }}>Create New Workspace</h3>
-                        {error && <p style={{ color: "#EF4444", fontSize: 12, marginBottom: 10 }}>{error}</p>}
-                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div className="bg-white border border-[#EFE9E1] rounded-2xl p-6 shadow-sm">
+                        <h3 className="text-base font-bold text-[#111827] font-heading mb-4">Create New Workspace</h3>
+                        {error && <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">{error}</p>}
+                        <div className="space-y-4">
                             <div>
-                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--cl-muted-foreground)", marginBottom: 5 }}>Workspace Name</label>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Workspace Name</label>
                                 <input
                                     type="text"
                                     value={name}
-                                    onChange={(e) => { setName(e.target.value); setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")); }}
+                                    onChange={(e) => { setName(e.target.value); setSlug(e.target.value.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")); }}
                                     placeholder="Acme Engineering"
-                                    style={{ width: "100%", border: "1px solid var(--cl-border)", borderRadius: 8, padding: "9px 12px", fontSize: 14, outline: "none", color: "var(--cl-foreground)", background: "var(--cl-background)" }}
+                                    className={inputCls}
                                 />
                             </div>
                             <div>
-                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--cl-muted-foreground)", marginBottom: 5 }}>Slug</label>
-                                <input
-                                    type="text"
-                                    value={slug}
-                                    onChange={(e) => setSlug(e.target.value)}
-                                    placeholder="acme-engineering"
-                                    style={{ width: "100%", border: "1px solid var(--cl-border)", borderRadius: 8, padding: "9px 12px", fontSize: 14, outline: "none", color: "var(--cl-foreground)", background: "rgba(0,0,0,0.2)" }}
-                                />
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2">Slug</label>
+                                <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="acme-engineering" className={inputCls} />
                             </div>
-                            <div style={{ display: "flex", gap: 8 }}>
-                                <button onClick={() => setShowCreate(false)} style={{ flex: 1, padding: "9px", border: "1px solid var(--cl-border)", borderRadius: 8, background: "transparent", fontSize: 13, fontWeight: 500, cursor: "pointer", color: "var(--cl-muted-foreground)" }}>Cancel</button>
-                                <button onClick={handleCreate} style={{ flex: 2, padding: "9px", background: "#2563EB", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", color: "#fff" }}>Create & Enter</button>
+                            <div className="flex gap-3 pt-1">
+                                {workspaces.length > 0 && (
+                                    <button onClick={() => setShowCreate(false)} className="flex-1 py-2.5 rounded-full text-xs font-bold text-neutral-600 hover:bg-neutral-100 transition-colors">Cancel</button>
+                                )}
+                                <button
+                                    onClick={handleCreate}
+                                    disabled={creating}
+                                    className="flex-[2] py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] shadow-md shadow-[#FA5A2A]/25 hover:opacity-95 disabled:opacity-50 transition-all"
+                                >
+                                    {creating ? "Creating..." : "Create & Enter"}
+                                </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                <div style={{ textAlign: "center", marginTop: 20 }}>
-                    <a href="/sign-in" style={{ fontSize: 13, color: "var(--cl-muted-foreground)", textDecoration: "none" }}>← Sign out</a>
+                <div className="text-center mt-6">
+                    <SignOutButton redirectUrl="/">
+                        <button className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-[#FA5A2A] transition-colors">
+                            <LogOut className="w-3.5 h-3.5" /> Sign out
+                        </button>
+                    </SignOutButton>
                 </div>
             </div>
         </div>

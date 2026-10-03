@@ -1,8 +1,9 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { Bell, Plus } from "lucide-react";
+import { Bell, Plus, Search, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 interface TopBarProps {
   title: string;
@@ -12,86 +13,69 @@ interface TopBarProps {
 }
 
 export function TopBar({ title, subtitle, workspaceId, showCreateIncident }: TopBarProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
-    <header className="topbar">
-      <div className="topbar-left">
-        <h1 className="topbar-title">{title}</h1>
-        {subtitle && <p className="topbar-subtitle">{subtitle}</p>}
+    <header className="h-16 px-6 sm:px-8 bg-[#FAF8F5]/80 backdrop-blur-md border-b border-[#EFE9E1] sticky top-0 z-30 flex items-center justify-between">
+      
+      {/* Title / Breadcrumb */}
+      <div className="flex flex-col">
+        <h1 className="text-base sm:text-lg font-bold text-[#111827] tracking-tight font-heading leading-tight">
+          {title}
+        </h1>
+        {subtitle && (
+          <p className="text-xs text-neutral-500 font-medium">
+            {subtitle}
+          </p>
+        )}
       </div>
-      <div className="topbar-right">
+
+      {/* Center Search Pill (Elegent inspired) */}
+      <div className="hidden md:flex items-center w-72 lg:w-96 px-3.5 py-1.5 rounded-full bg-white border border-[#E5E0D8] shadow-sm focus-within:border-[#FA5A2A] focus-within:ring-2 focus-within:ring-[#FA5A2A]/10 transition-all">
+        <Search className="w-4 h-4 text-neutral-400 shrink-0 mr-2" />
+        <input
+          type="text"
+          placeholder="Search incidents, services, tags..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full bg-transparent text-xs text-[#111827] placeholder-neutral-400 focus:outline-none"
+        />
+      </div>
+
+      {/* Right Actions */}
+      <div className="flex items-center gap-3">
         {showCreateIncident && workspaceId && (
-          <Link href={`/dashboard/incidents/new?workspaceId=${workspaceId}`} className="create-btn" style={{ whiteSpace: "nowrap", display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <Plus size={15} style={{ flexShrink: 0 }} />
+          <Link
+            href={`/dashboard/incidents/new?workspaceId=${workspaceId}`}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-md shadow-[#FA5A2A]/25 transition-all transform hover:-translate-y-0.5"
+          >
+            <Plus className="w-3.5 h-3.5" />
             <span>New Incident</span>
           </Link>
         )}
-        <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: { width: 34, height: 34 } } }} />
+
+        {/* Notifications */}
+        <button
+          title="Notifications"
+          className="relative p-2 rounded-full bg-white border border-[#E5E0D8] text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 shadow-sm transition-colors"
+        >
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FA5A2A] ring-2 ring-white" />
+        </button>
+
+        {/* User Button */}
+        <div className="pl-1">
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                userButtonAvatarBox: { width: 34, height: 34, borderRadius: "50%", border: "2px solid #E5E0D8" },
+              },
+            }}
+          />
+        </div>
       </div>
 
-      <style jsx>{`
-        .topbar {
-          height: 64px;
-          background: rgba(6, 11, 25, 0.85); /* Dark tech theme */
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border-bottom: 1px solid var(--cl-border);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 32px;
-          position: sticky;
-          top: 0;
-          z-index: 30;
-        }
-        .topbar-left { display: flex; flex-direction: column; gap: 1px; }
-        .topbar-title { font-size: 16px; font-weight: 700; color: var(--cl-foreground); letter-spacing: -0.01em; }
-        .topbar-subtitle { font-size: 12px; color: var(--cl-muted-foreground); }
-        .topbar-right { display: flex; align-items: center; gap: 12px; }
-        .create-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
-          color: white;
-          border: 1px solid rgba(255,255,255,0.1);
-          box-shadow: 0 0 10px rgba(37,99,235,0.2);
-          border-radius: 8px;
-          padding: 8px 16px;
-          font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          text-decoration: none;
-          transition: all 0.2s;
-          line-height: 1;
-          white-space: nowrap;
-        }
-        .create-btn:hover { background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%); box-shadow: 0 0 15px rgba(59,130,246,0.4); transform: translateY(-1px); }
-        .create-btn:active { transform: translateY(1px); }
-        .icon-btn {
-          position: relative;
-          background: none;
-          border: 1px solid var(--cl-border);
-          border-radius: 8px;
-          padding: 7px;
-          cursor: pointer;
-          color: var(--cl-muted-foreground);
-          display: flex;
-          align-items: center;
-          transition: all 0.15s;
-        }
-        .icon-btn:hover { background: rgba(255,255,255,0.05); color: var(--cl-foreground); box-shadow: 0 0 8px rgba(255,255,255,0.05); }
-        .notif-dot {
-          position: absolute;
-          top: 6px;
-          right: 6px;
-          width: 7px;
-          height: 7px;
-          background: #EF4444;
-          border-radius: 50%;
-          border: 1.5px solid #060B19;
-        }
-      `}</style>
     </header>
   );
 }

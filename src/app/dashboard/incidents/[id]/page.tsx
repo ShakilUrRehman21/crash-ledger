@@ -12,31 +12,35 @@ const EVENT_ICONS: Record<string, { icon: any; color: string; bg: string; label:
     detected: { icon: AlertTriangle, color: "#EF4444", bg: "#FEF2F2", label: "Detected" },
     acknowledged: { icon: User, color: "#F59E0B", bg: "#FFFBEB", label: "Acknowledged" },
     mitigated: { icon: Clock, color: "#7C3AED", bg: "#F5F3FF", label: "Mitigated" },
-    resolved: { icon: CheckCircle2, color: "#22C55E", bg: "#F0FDF4", label: "Resolved" },
+    resolved: { icon: CheckCircle2, color: "#10B981", bg: "#ECFDF5", label: "Resolved" },
     note: { icon: FileText, color: "#2563EB", bg: "#EFF6FF", label: "Note" },
 };
 
 const SEVERITY_COLORS: Record<string, string> = { critical: "#DC2626", high: "#EA580C", medium: "#D97706", low: "#64748B" };
 const STATUS_COLORS: Record<string, { text: string; bg: string }> = {
     open: { text: "#2563EB", bg: "#EFF6FF" },
-    investigating: { text: "#D97706", bg: "#FFFBEB" },
-    resolved: { text: "#16A34A", bg: "#F0FDF4" },
-    archived: { text: "#64748B", bg: "#F8FAFC" },
+    investigating: { text: "#EA580C", bg: "#FFF7ED" },
+    resolved: { text: "#059669", bg: "#ECFDF5" },
+    archived: { text: "#64748B", bg: "#F1F5F9" },
 };
 const ACTION_STATUS: Record<string, { bg: string; text: string }> = {
     todo: { bg: "#F1F5F9", text: "#64748B" },
-    in_progress: { bg: "#FFFBEB", text: "#D97706" },
-    done: { bg: "#F0FDF4", text: "#16A34A" },
+    in_progress: { bg: "#FFF7ED", text: "#EA580C" },
+    done: { bg: "#ECFDF5", text: "#059669" },
 };
 const PRIORITY_COLORS: Record<string, string> = { critical: "#DC2626", high: "#EA580C", medium: "#D97706", low: "#64748B" };
 
-// Status transition rules
 const VALID_TRANSITIONS: Record<string, string[]> = {
     open: ["investigating", "resolved"],
     investigating: ["resolved"],
     resolved: ["archived"],
     archived: [],
 };
+
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all";
+const labelCls = "block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2";
+const cardCls = "bg-white rounded-2xl border border-[#EFE9E1] shadow-sm";
+const primaryBtn = "inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-md shadow-[#FA5A2A]/25 transition-all";
 
 function fmt(dateStr: string | null) {
     if (!dateStr) return "—";
@@ -63,6 +67,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
     useEffect(() => {
         const wid = localStorage.getItem("cl_workspace_id");
         if (wid) setWorkspaceId(wid);
+        else setLoading(false);
     }, []);
 
     useEffect(() => {
@@ -86,13 +91,26 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
             .catch(console.error);
     }, [workspaceId, id]);
 
-    if (loading) return <div style={{ padding: 40, textAlign: "center", color: "var(--cl-muted-foreground)" }}>Loading Incident #{id}...</div>;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#FAF8F5]">
+                <TopBar title="Incident Detail" subtitle="Loading..." />
+                <div className="max-w-4xl mx-auto p-8 space-y-4 animate-pulse">
+                    <div className="h-40 bg-neutral-200/60 rounded-2xl" />
+                    <div className="h-64 bg-neutral-200/60 rounded-2xl" />
+                </div>
+            </div>
+        );
+    }
 
     if (!incident) {
         return (
-            <div style={{ padding: 40, textAlign: "center" }}>
-                <p style={{ fontSize: 16, color: "#94A3B8" }}>Incident #{id} not found.</p>
-                <Link href="/dashboard/incidents" style={{ color: "#2563EB", textDecoration: "none", fontSize: 14 }}>← Back to incidents</Link>
+            <div className="min-h-screen bg-[#FAF8F5]">
+                <TopBar title="Incident Detail" />
+                <div className="p-12 text-center">
+                    <p className="text-base text-neutral-500 mb-3">Incident not found.</p>
+                    <Link href="/dashboard/incidents" className="text-sm font-bold text-[#FA5A2A]">← Back to incidents</Link>
+                </div>
             </div>
         );
     }
@@ -102,6 +120,8 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
     const nextStatuses = VALID_TRANSITIONS[stat] ?? [];
     const localTimeline = incident.timelineEvents ?? [];
     const localActions = incident.actionItemsList ?? [];
+    const sevColor = SEVERITY_COLORS[sev] ?? "#64748B";
+    const statStyle = STATUS_COLORS[stat] ?? STATUS_COLORS.open;
 
     async function changeStatus(newStatus: string) {
         if (!workspaceId) return;
@@ -113,11 +133,10 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                 body: JSON.stringify({ status: newStatus, workspaceId })
             });
             if (res.ok) {
-                // optimistically update
                 setIncident((prev: any) => ({
                     ...prev,
                     status: newStatus,
-                    timelineEvents: [...prev.timelineEvents, { id: `temp_${Date.now()}`, eventType: newStatus, createdAt: new Date().toISOString(), createdBy: 'You', description: `Status changed to ${newStatus}` }]
+                    timelineEvents: [...(prev.timelineEvents ?? []), { id: `temp_${Date.now()}`, eventType: newStatus, createdAt: new Date().toISOString(), createdBy: 'You', description: `Status changed to ${newStatus}` }]
                 }));
             }
         } catch (e) {
@@ -137,7 +156,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
             });
             if (res.ok) {
                 const data = await res.json();
-                setIncident((prev: any) => ({ ...prev, timelineEvents: [...prev.timelineEvents, data.event] }));
+                setIncident((prev: any) => ({ ...prev, timelineEvents: [...(prev.timelineEvents ?? []), data.event] }));
             }
         } catch (e) {
             console.error(e);
@@ -146,7 +165,6 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
 
     async function addActionItem() {
         if (!newAction.title.trim() || !workspaceId) return;
-
         try {
             const res = await fetch(`/api/action-items`, {
                 method: "POST",
@@ -161,7 +179,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
             });
             if (res.ok) {
                 const data = await res.json();
-                setIncident((prev: any) => ({ ...prev, actionItemsList: [...prev.actionItemsList, data.actionItem] }));
+                setIncident((prev: any) => ({ ...prev, actionItemsList: [...(prev.actionItemsList ?? []), data.actionItem] }));
                 setNewAction({ title: "", priority: "medium", assignedTo: "" });
                 setShowAddAction(false);
             }
@@ -177,7 +195,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
 
         setIncident((prev: any) => ({
             ...prev,
-            actionItemsList: prev.actionItemsList.map((a: any) => a.id === actionId ? { ...a, status: next } : a)
+            actionItemsList: (prev.actionItemsList ?? []).map((a: any) => a.id === actionId ? { ...a, status: next } : a)
         }));
 
         try {
@@ -210,7 +228,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                 setIncident((prev: any) => ({ ...prev, rca: data.rca }));
                 setRcaSubmitted(true);
             } else {
-                setRcaError(data.error?.detailedAnalysis?.[0] || data.error?.preventionSteps?.[0] || data.error || "Failed to submit RCA. Checks inputs.");
+                setRcaError(data.error?.detailedAnalysis?.[0] || data.error?.preventionSteps?.[0] || (typeof data.error === "string" ? data.error : "") || "Failed to submit RCA. Check inputs.");
             }
         } catch (e: any) {
             setRcaError(e.message || "An error occurred");
@@ -218,48 +236,51 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
         }
     }
 
-    return (
-        <div>
-            <TopBar title="Incident Detail" subtitle={`#INC-${id.padStart(3, "0")}`} />
-            <div style={{ padding: 24, maxWidth: 960, margin: "0 auto" }}>
+    const metaItems = [
+        { label: "Component", val: incident.systemComponent || "General" },
+        { label: "Detected", val: fmt(incident.detectedAt) },
+        { label: "Resolved", val: fmt(incident.resolvedAt) },
+        { label: "Downtime", val: incident.downtimeMinutes > 0 ? `${incident.downtimeMinutes} min` : "None", red: incident.downtimeMinutes > 0 },
+        { label: "Impact Cost", val: incident.impactCost ? `$${Number(incident.impactCost).toLocaleString()}` : "—" },
+        { label: "Created By", val: incident.createdByUser?.fullName ?? incident.createdBy ?? "—" },
+    ];
 
-                {/* Back */}
-                <Link href="/dashboard/incidents" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--cl-muted-foreground)", fontSize: 13, fontWeight: 500, textDecoration: "none", marginBottom: 20 }}>
-                    <ArrowLeft size={14} /> Back to Incidents
+    return (
+        <div className="min-h-screen bg-[#FAF8F5] pb-16">
+            <TopBar title="Incident Detail" subtitle={`#${String(id).slice(0, 8)}`} />
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
+
+                <Link href="/dashboard/incidents" className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-[#FA5A2A] mb-5 transition-colors">
+                    <ArrowLeft className="w-3.5 h-3.5" /> Back to incidents
                 </Link>
 
-                {/* Header Card */}
-                <div className="header-card">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 16 }}>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                                <span style={{ background: SEVERITY_COLORS[sev] + "18", color: SEVERITY_COLORS[sev], border: `1px solid ${SEVERITY_COLORS[sev]}40`, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, textTransform: "uppercase" }}>{sev}</span>
-                                <span style={{ background: STATUS_COLORS[stat].bg, color: STATUS_COLORS[stat].text, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700, textTransform: "capitalize" }}>{stat}</span>
-                                <span style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "var(--cl-muted-foreground)", padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 500 }}>{incident.environment}</span>
+                {/* Header card */}
+                <div className={`${cardCls} p-6 sm:p-8 mb-6`}>
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: sevColor + "15", color: sevColor, border: `1px solid ${sevColor}40` }}>{sev}</span>
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: statStyle.bg, color: statStyle.text }}>{stat}</span>
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-neutral-100 text-neutral-600 border border-neutral-200">{incident.environment}</span>
                             </div>
-                            <h1 style={{ fontSize: 20, fontWeight: 800, color: "var(--cl-foreground)", marginBottom: 8, lineHeight: 1.3 }}>{incident.title}</h1>
-                            {incident.description && <p style={{ fontSize: 13, color: "var(--cl-muted-foreground)", lineHeight: 1.6 }}>{incident.description}</p>}
+                            <h1 className="text-xl sm:text-2xl font-extrabold text-[#111827] font-heading leading-snug mb-2">{incident.title}</h1>
+                            {incident.description && <p className="text-sm text-neutral-500 leading-relaxed">{incident.description}</p>}
                         </div>
 
-                        {/* Status action panel */}
-                        <div style={{ flexShrink: 0 }}>
+                        <div className="shrink-0">
                             {nextStatuses.length > 0 ? (
-                                <div style={{ position: "relative" }}>
-                                    <button
-                                        onClick={() => setStatusChanging((v) => !v)}
-                                        style={{ display: "flex", alignItems: "center", gap: 6, background: "linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: "0 0 10px rgba(37,99,235,0.2)" }}
-                                    >
-                                        Update Status <ChevronDown size={14} />
+                                <div className="relative">
+                                    <button onClick={() => setStatusChanging((v) => !v)} className={primaryBtn}>
+                                        Update Status <ChevronDown className="w-3.5 h-3.5" />
                                     </button>
                                     {statusChanging && (
-                                        <div style={{ position: "absolute", right: 0, top: "110%", background: "var(--cl-muted)", border: "1px solid var(--cl-border)", borderRadius: 10, padding: 6, zIndex: 50, minWidth: 160, boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+                                        <div className="absolute right-0 top-full mt-2 bg-white border border-[#EFE9E1] rounded-2xl p-1.5 z-50 min-w-[190px] shadow-xl">
                                             {nextStatuses.map((ns) => (
                                                 <button
                                                     key={ns}
                                                     onClick={() => changeStatus(ns)}
-                                                    style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", border: "none", background: "none", borderRadius: 7, fontSize: 13, fontWeight: 600, color: STATUS_COLORS[ns].text, cursor: "pointer", textTransform: "capitalize" }}
-                                                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-                                                    onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
+                                                    className="block w-full text-left px-3 py-2 rounded-xl text-xs font-bold capitalize hover:bg-[#FAF8F5] transition-colors"
+                                                    style={{ color: STATUS_COLORS[ns].text }}
                                                 >
                                                     → Mark as {ns}
                                                 </button>
@@ -268,237 +289,214 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                                     )}
                                 </div>
                             ) : (
-                                <span style={{ fontSize: 12, color: "var(--cl-muted-foreground)", fontStyle: "italic" }}>No further transitions</span>
+                                <span className="text-xs italic text-neutral-400">No further transitions</span>
                             )}
                         </div>
                     </div>
 
-                    {/* Meta grid */}
-                    <div className="meta-grid">
-                        {[
-                            { label: "Component", val: incident.systemComponent || "General" },
-                            { label: "Detected", val: fmt(incident.detectedAt) },
-                            { label: "Resolved", val: fmt(incident.resolvedAt) },
-                            { label: "Downtime", val: incident.downtimeMinutes > 0 ? `${incident.downtimeMinutes} min` : "None", red: incident.downtimeMinutes > 0 },
-                            { label: "Impact Cost", val: incident.impactCost ? `$${Number(incident.impactCost).toLocaleString()}` : "—" },
-                            { label: "Created By", val: incident.createdByUser?.fullName ?? incident.createdBy },
-                        ].map(({ label, val, red }) => (
-                            <div key={label} className="meta-item">
-                                <span className="meta-label">{label}</span>
-                                <span className="meta-value" style={red ? { color: "#EF4444" } : undefined}>{String(val)}</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-5 mt-5 border-t border-neutral-100">
+                        {metaItems.map(({ label, val, red }) => (
+                            <div key={label} className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{label}</span>
+                                <span className={`text-sm font-semibold ${red ? "text-red-500" : "text-[#111827]"}`}>{String(val)}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="tabs">
+                <div className="inline-flex flex-wrap gap-1 p-1 mb-5 bg-white border border-[#EFE9E1] rounded-full shadow-sm">
                     {(["timeline", "rca", "actions"] as const).map((t) => (
-                        <button key={t} onClick={() => setTab(t)} className={`tab-btn${tab === t ? " tab-active" : ""}`}>
-                            {t === "timeline" && <Clock size={13} />}
-                            {t === "rca" && <FileText size={13} />}
-                            {t === "actions" && <CheckSquare size={13} />}
+                        <button
+                            key={t}
+                            onClick={() => setTab(t)}
+                            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${tab === t ? "bg-[#FA5A2A] text-white shadow-md shadow-[#FA5A2A]/25" : "text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50"}`}
+                        >
+                            {t === "timeline" && <Clock className="w-3.5 h-3.5" />}
+                            {t === "rca" && <FileText className="w-3.5 h-3.5" />}
+                            {t === "actions" && <CheckSquare className="w-3.5 h-3.5" />}
                             {t === "timeline" ? "Timeline" : t === "rca" ? "Root Cause Analysis" : `Action Items (${localActions.length})`}
                         </button>
                     ))}
                 </div>
 
-                {/* ── Timeline Tab ─────────────────────────────────── */}
+                {/* Timeline */}
                 {tab === "timeline" && (
-                    <div className="tab-content animate-fade-in">
-                        <div className="timeline">
+                    <div>
+                        <div className="flex flex-col">
                             {localTimeline.map((ev: any, i: number) => {
                                 const cfg = EVENT_ICONS[ev.eventType] ?? EVENT_ICONS.note;
                                 const Icon = cfg.icon;
                                 return (
-                                    <div key={ev.id} className="timeline-item">
-                                        <div className="timeline-connector">
-                                            <div style={{ width: 34, height: 34, borderRadius: "50%", background: cfg.bg, border: `2px solid ${cfg.color}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                                <Icon size={14} color={cfg.color} />
+                                    <div key={ev.id} className="flex gap-4">
+                                        <div className="flex flex-col items-center">
+                                            <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: cfg.bg, border: `2px solid ${cfg.color}30` }}>
+                                                <Icon className="w-4 h-4" style={{ color: cfg.color }} />
                                             </div>
-                                            {i < localTimeline.length - 1 && <div className="timeline-line" />}
+                                            {i < localTimeline.length - 1 && <div className="w-0.5 flex-1 bg-[#EFE9E1] my-1 min-h-[20px]" />}
                                         </div>
-                                        <div className="timeline-body">
-                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                                                <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: cfg.color, letterSpacing: "0.05em" }}>{cfg.label}</span>
-                                                <span style={{ fontSize: 11, color: "var(--cl-muted-foreground)" }}>{fmt(ev.createdAt)}</span>
+                                        <div className={`${cardCls} flex-1 p-4 mb-3`}>
+                                            <div className="flex justify-between mb-1">
+                                                <span className="text-[11px] font-extrabold uppercase tracking-wider" style={{ color: cfg.color }}>{cfg.label}</span>
+                                                <span className="text-[11px] text-neutral-400">{fmt(ev.createdAt)}</span>
                                             </div>
-                                            <p style={{ fontSize: 13, color: "var(--cl-foreground)", lineHeight: 1.6 }}>{ev.description}</p>
+                                            <p className="text-sm text-neutral-700 leading-relaxed">{ev.description}</p>
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
 
-                        {/* Add Note */}
-                        <div style={{ marginTop: 20, background: "var(--cl-muted)", border: "1px solid var(--cl-border)", borderRadius: 10, padding: 16 }}>
-                            <p style={{ fontSize: 12, fontWeight: 600, color: "var(--cl-muted-foreground)", marginBottom: 8 }}>Add a timeline note</p>
-                            <div style={{ display: "flex", gap: 8 }}>
+                        <div className={`${cardCls} p-5 mt-4`}>
+                            <p className={labelCls}>Add a timeline note</p>
+                            <div className="flex gap-2">
                                 <textarea
                                     value={noteText}
                                     onChange={(e) => setNoteText(e.target.value)}
                                     placeholder="Describe what happened or what was done..."
                                     rows={2}
-                                    style={{ flex: 1, border: "1px solid var(--cl-border)", background: "var(--cl-background)", borderRadius: 8, padding: "8px 12px", fontSize: 13, outline: "none", resize: "none", color: "var(--cl-foreground)" }}
+                                    className={`${inputCls} flex-1 resize-none`}
                                 />
-                                <button
-                                    onClick={addNote}
-                                    disabled={!noteText.trim()}
-                                    style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "0 16px", cursor: noteText.trim() ? "pointer" : "not-allowed", opacity: noteText.trim() ? 1 : 0.5, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }}
-                                >
-                                    <Send size={13} /> Post
+                                <button onClick={addNote} disabled={!noteText.trim()} className={`${primaryBtn} disabled:opacity-40 disabled:cursor-not-allowed self-stretch`}>
+                                    <Send className="w-3.5 h-3.5" /> Post
                                 </button>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* ── RCA Tab ───────────────────────────────────────── */}
+                {/* RCA */}
                 {tab === "rca" && (
-                    <div className="tab-content animate-fade-in">
+                    <div className={`${cardCls} p-6 sm:p-8`}>
                         {(incident.rca && !rcaSubmitted) ? (
-                            <div className="rca-card">
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+                            <>
+                                <div className="flex justify-between mb-6">
                                     <div>
-                                        <p className="rca-label">Root Cause Category</p>
-                                        <span style={{ background: "rgba(124, 58, 237, 0.15)", color: "#C4B5FD", border: "1px solid rgba(124, 58, 237, 0.3)", padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600, textTransform: "capitalize", display: "inline-block", marginTop: 4 }}>
-                                            {incident.rca.rootCauseCategory.replace(/_/g, " ")}
+                                        <p className={labelCls}>Root Cause Category</p>
+                                        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold capitalize bg-purple-50 text-purple-700 border border-purple-200">
+                                            {String(incident.rca.rootCauseCategory).replace(/_/g, " ")}
                                         </span>
                                     </div>
-                                    <div style={{ textAlign: "right" }}>
-                                        <p className="rca-label">Recorded At</p>
-                                        <p style={{ fontSize: 11, color: "var(--cl-muted-foreground)", marginTop: 4 }}>{fmt(incident.rca.createdAt)}</p>
+                                    <div className="text-right">
+                                        <p className={labelCls}>Recorded At</p>
+                                        <p className="text-xs text-neutral-500">{fmt(incident.rca.createdAt)}</p>
                                     </div>
                                 </div>
-                                <div className="rca-section">
-                                    <p className="rca-label">Detailed Analysis</p>
-                                    <p className="rca-text">{incident.rca.detailedAnalysis}</p>
+                                <div className="pt-5 border-t border-neutral-100">
+                                    <p className={labelCls}>Detailed Analysis</p>
+                                    <p className="text-sm text-neutral-700 leading-relaxed">{incident.rca.detailedAnalysis}</p>
                                 </div>
-                                <div className="rca-section">
-                                    <p className="rca-label">Prevention Steps</p>
-                                    <div className="rca-text">
-                                        {incident.rca.preventionSteps.split("\n").map((step: string, i: number) => (
-                                            <p key={i} style={{ marginBottom: 6 }}>{step}</p>
+                                <div className="pt-5 mt-5 border-t border-neutral-100">
+                                    <p className={labelCls}>Prevention Steps</p>
+                                    <div className="text-sm text-neutral-700 leading-relaxed">
+                                        {String(incident.rca.preventionSteps).split("\n").map((step: string, i: number) => (
+                                            <p key={i} className="mb-1.5">{step}</p>
                                         ))}
                                     </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="rca-card">
-                                {stat === "resolved" || stat === "archived" ? (
-                                    <>
-                                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                                            <FileText size={18} color="#7C3AED" />
-                                            <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--cl-foreground)" }}>
-                                                {rcaSubmitted ? "✅ RCA Submitted" : "Submit Root Cause Analysis"}
-                                            </h3>
-                                        </div>
-                                        {rcaSubmitted ? (
-                                            <p style={{ fontSize: 14, color: "#22C55E", fontWeight: 600 }}>Your RCA has been recorded successfully.</p>
-                                        ) : (
-                                            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                                                <div>
-                                                    <label style={{ fontSize: 12, fontWeight: 600, color: "var(--cl-muted-foreground)", display: "block", marginBottom: 6 }}>Root Cause Category</label>
-                                                    <select value={rcaForm.category} onChange={(e) => setRcaForm((p) => ({ ...p, category: e.target.value }))} style={{ width: "100%", border: "1px solid var(--cl-border)", background: "var(--cl-background)", color: "var(--cl-foreground)", borderRadius: 8, padding: "9px 12px", fontSize: 13, outline: "none" }}>
-                                                        {["code_bug", "human_error", "infra", "process_failure", "unknown"].map((c) => (
-                                                            <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label style={{ fontSize: 12, fontWeight: 600, color: "var(--cl-muted-foreground)", display: "block", marginBottom: 6 }}>Detailed Analysis</label>
-                                                    <textarea rows={4} value={rcaForm.analysis} onChange={(e) => setRcaForm((p) => ({ ...p, analysis: e.target.value }))} placeholder="What was the root cause?" style={{ width: "100%", border: "1px solid var(--cl-border)", background: "var(--cl-background)", color: "var(--cl-foreground)", borderRadius: 8, padding: "10px 12px", fontSize: 13, outline: "none", resize: "vertical" }} />
-                                                </div>
-                                                <div>
-                                                    <label style={{ fontSize: 12, fontWeight: 600, color: "var(--cl-muted-foreground)", display: "block", marginBottom: 6 }}>Prevention Steps</label>
-                                                    <textarea rows={3} value={rcaForm.prevention} onChange={(e) => setRcaForm((p) => ({ ...p, prevention: e.target.value }))} placeholder="How will you prevent recurrence?" style={{ width: "100%", border: "1px solid var(--cl-border)", background: "var(--cl-background)", color: "var(--cl-foreground)", borderRadius: 8, padding: "10px 12px", fontSize: 13, outline: "none", resize: "vertical" }} />
-                                                </div>
-                                                <button
-                                                    onClick={submitRCA}
-                                                    style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer", alignSelf: "flex-start" }}
-                                                >
-                                                    Submit RCA
-                                                </button>
-                                                {rcaError && <p style={{ color: "#EF4444", fontSize: 13, fontWeight: 500 }}>{typeof rcaError === "string" ? rcaError : JSON.stringify(rcaError)}</p>}
-                                            </div>
-                                        )}
-                                    </>
+                            </>
+                        ) : stat === "resolved" || stat === "archived" ? (
+                            <>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center"><FileText className="w-5 h-5" /></div>
+                                    <h3 className="text-base font-bold text-[#111827] font-heading">
+                                        {rcaSubmitted ? "RCA Submitted" : "Submit Root Cause Analysis"}
+                                    </h3>
+                                </div>
+                                {rcaSubmitted ? (
+                                    <p className="text-sm text-emerald-600 font-semibold">Your RCA has been recorded successfully.</p>
                                 ) : (
-                                    <div style={{ textAlign: "center", padding: 40 }}>
-                                        <FileText size={40} color="var(--cl-border)" />
-                                        <p style={{ fontSize: 15, fontWeight: 600, color: "var(--cl-foreground)", marginTop: 12 }}>RCA locked until incident is resolved</p>
-                                        <p style={{ fontSize: 13, color: "var(--cl-muted-foreground)", marginTop: 4 }}>Mark this incident as <strong>resolved</strong> to submit a Root Cause Analysis.</p>
+                                    <div className="space-y-5">
+                                        <div>
+                                            <label className={labelCls}>Root Cause Category</label>
+                                            <select value={rcaForm.category} onChange={(e) => setRcaForm((p) => ({ ...p, category: e.target.value }))} className={inputCls}>
+                                                {["code_bug", "human_error", "infra", "process_failure", "unknown"].map((c) => (
+                                                    <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelCls}>Detailed Analysis</label>
+                                            <textarea rows={4} value={rcaForm.analysis} onChange={(e) => setRcaForm((p) => ({ ...p, analysis: e.target.value }))} placeholder="What was the root cause?" className={`${inputCls} resize-y`} />
+                                        </div>
+                                        <div>
+                                            <label className={labelCls}>Prevention Steps</label>
+                                            <textarea rows={3} value={rcaForm.prevention} onChange={(e) => setRcaForm((p) => ({ ...p, prevention: e.target.value }))} placeholder="How will you prevent recurrence?" className={`${inputCls} resize-y`} />
+                                        </div>
+                                        <button onClick={submitRCA} className={primaryBtn}>Submit RCA</button>
+                                        {rcaError && <p className="text-xs font-semibold text-red-500">{rcaError}</p>}
                                     </div>
                                 )}
+                            </>
+                        ) : (
+                            <div className="text-center py-10">
+                                <FileText className="w-10 h-10 text-neutral-300 mx-auto" />
+                                <p className="text-sm font-bold text-[#111827] mt-3">RCA locked until incident is resolved</p>
+                                <p className="text-xs text-neutral-500 mt-1">Mark this incident as <strong>resolved</strong> to submit a Root Cause Analysis.</p>
                             </div>
                         )}
                     </div>
                 )}
 
-                {/* ── Action Items Tab ───────────────────────────────── */}
+                {/* Actions */}
                 {tab === "actions" && (
-                    <div className="tab-content animate-fade-in">
-                        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
-                            <button onClick={() => setShowAddAction((v) => !v)} style={{ display: "flex", alignItems: "center", gap: 6, background: "linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: "0 0 10px rgba(37,99,235,0.2)" }}>
-                                <Plus size={14} /> Add Action Item
+                    <div>
+                        <div className="flex justify-end mb-4">
+                            <button onClick={() => setShowAddAction((v) => !v)} className={primaryBtn}>
+                                <Plus className="w-3.5 h-3.5" /> Add Action Item
                             </button>
                         </div>
 
                         {showAddAction && (
-                            <div style={{ background: "rgba(37,99,235,0.1)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 10, padding: 16, marginBottom: 16 }}>
-                                <p style={{ fontSize: 13, fontWeight: 600, color: "#60A5FA", marginBottom: 12 }}>New Action Item</p>
-                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                                    <input value={newAction.title} onChange={(e) => setNewAction((p) => ({ ...p, title: e.target.value }))} placeholder="Task title..." style={{ flex: 1, minWidth: 200, border: "1px solid var(--cl-border)", background: "var(--cl-background)", color: "var(--cl-foreground)", borderRadius: 8, padding: "8px 12px", fontSize: 13, outline: "none" }} />
-                                    <select value={newAction.priority} onChange={(e) => setNewAction((p) => ({ ...p, priority: e.target.value as any }))} style={{ border: "1px solid var(--cl-border)", background: "var(--cl-background)", color: "var(--cl-foreground)", borderRadius: 8, padding: "8px 12px", fontSize: 13, outline: "none" }}>
+                            <div className="bg-[#FFF2EC] border border-[#FFD5C7] rounded-2xl p-4 mb-4">
+                                <p className="text-xs font-bold text-[#C0390B] mb-3">New Action Item</p>
+                                <div className="flex flex-wrap gap-2 items-center">
+                                    <input value={newAction.title} onChange={(e) => setNewAction((p) => ({ ...p, title: e.target.value }))} placeholder="Task title..." className={`${inputCls} flex-1 min-w-[200px] !w-auto`} />
+                                    <select value={newAction.priority} onChange={(e) => setNewAction((p) => ({ ...p, priority: e.target.value }))} className={`${inputCls} !w-auto`}>
                                         {["critical", "high", "medium", "low"].map((p) => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
                                     </select>
-                                    <select value={newAction.assignedTo} onChange={(e) => setNewAction((p) => ({ ...p, assignedTo: e.target.value }))} style={{ border: "1px solid var(--cl-border)", background: "var(--cl-background)", color: "var(--cl-foreground)", borderRadius: 8, padding: "8px 12px", fontSize: 13, outline: "none" }}>
+                                    <select value={newAction.assignedTo} onChange={(e) => setNewAction((p) => ({ ...p, assignedTo: e.target.value }))} className={`${inputCls} !w-auto`}>
                                         <option value="">Unassigned</option>
                                         {members.map(m => <option key={m.id} value={m.id}>{m.fullName || m.email}</option>)}
                                     </select>
-                                    <button onClick={addActionItem} style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Add</button>
-                                    <button onClick={() => setShowAddAction(false)} style={{ background: "transparent", border: "1px solid var(--cl-border)", color: "var(--cl-foreground)", borderRadius: 8, padding: "8px 12px", fontSize: 13, cursor: "pointer" }}>Cancel</button>
+                                    <button onClick={addActionItem} className={primaryBtn}>Add</button>
+                                    <button onClick={() => setShowAddAction(false)} className="px-4 py-2.5 rounded-full text-xs font-bold text-neutral-600 hover:bg-white transition-colors">Cancel</button>
                                 </div>
                             </div>
                         )}
 
                         {localActions.length === 0 ? (
-                            <div style={{ textAlign: "center", padding: "48px 20px", background: "var(--cl-muted)", border: "1px solid var(--cl-border)", borderRadius: 12 }}>
-                                <CheckSquare size={36} color="var(--cl-border)" />
-                                <p style={{ fontSize: 14, fontWeight: 600, color: "var(--cl-foreground)", marginTop: 12 }}>No action items yet</p>
-                                <p style={{ fontSize: 13, color: "var(--cl-muted-foreground)", marginTop: 4 }}>Click "Add Action Item" to create remediation tasks.</p>
+                            <div className={`${cardCls} text-center py-12 px-5`}>
+                                <CheckSquare className="w-9 h-9 text-neutral-300 mx-auto" />
+                                <p className="text-sm font-bold text-[#111827] mt-3">No action items yet</p>
+                                <p className="text-xs text-neutral-500 mt-1">Click &quot;Add Action Item&quot; to create remediation tasks.</p>
                             </div>
                         ) : (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                            <div className="flex flex-col gap-3">
                                 {localActions.map((item: any) => {
                                     const isOverdue = item.dueDate && new Date(item.dueDate) < new Date() && item.status !== "done";
+                                    const pc = PRIORITY_COLORS[item.priority] ?? "#64748B";
+                                    const ac = ACTION_STATUS[item.status] ?? ACTION_STATUS.todo;
                                     return (
-                                        <div key={item.id} className="action-card" style={{ borderLeft: `3px solid ${PRIORITY_COLORS[item.priority]}` }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <p style={{ fontSize: 14, fontWeight: 600, color: "var(--cl-foreground)", marginBottom: 6 }}>{item.title}</p>
-                                                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                                                        <span style={{ ...ACTION_STATUS[item.status], padding: "2px 8px", borderRadius: 20, fontSize: 11, fontWeight: 600, textTransform: "capitalize" as const }}>
-                                                            {item.status.replace("_", " ")}
-                                                        </span>
-                                                        <span style={{ background: PRIORITY_COLORS[item.priority] + "18", color: PRIORITY_COLORS[item.priority], border: `1px solid ${PRIORITY_COLORS[item.priority]}40`, padding: "2px 8px", borderRadius: 20, fontSize: 11, fontWeight: 600, textTransform: "capitalize" as const }}>
-                                                            {item.priority}
-                                                        </span>
-                                                        {isOverdue && <span style={{ background: "#FEF2F2", color: "#DC2626", padding: "2px 8px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>⚠ Overdue</span>}
+                                        <div key={item.id} className={`${cardCls} p-4 hover:shadow-md transition-shadow`} style={{ borderLeft: `4px solid ${pc}` }}>
+                                            <div className="flex justify-between items-center gap-3">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-bold text-[#111827] mb-2">{item.title}</p>
+                                                    <div className="flex flex-wrap gap-2 items-center">
+                                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: ac.bg, color: ac.text }}>{String(item.status).replace("_", " ")}</span>
+                                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: pc + "15", color: pc, border: `1px solid ${pc}40` }}>{item.priority}</span>
+                                                        {isOverdue && <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-red-50 text-red-600">Overdue</span>}
                                                     </div>
                                                 </div>
-                                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                                    <div style={{ textAlign: "right", fontSize: 12 }}>
-                                                        {item.assignedUser && <p style={{ color: "var(--cl-muted-foreground)", fontWeight: 500 }}>{item.assignedUser.fullName}</p>}
-                                                        {item.dueDate && <p style={{ color: isOverdue ? "#EF4444" : "var(--cl-muted-foreground)", marginTop: 2 }}>Due {new Date(item.dueDate).toLocaleDateString()}</p>}
+                                                <div className="flex items-center gap-3 shrink-0">
+                                                    <div className="text-right text-xs">
+                                                        {item.assignedUser && <p className="text-neutral-600 font-semibold">{item.assignedUser.fullName}</p>}
+                                                        {item.dueDate && <p className={`mt-0.5 ${isOverdue ? "text-red-500" : "text-neutral-400"}`}>Due {new Date(item.dueDate).toLocaleDateString()}</p>}
                                                     </div>
-                                                    {/* Cycle status button */}
                                                     <button
                                                         onClick={() => cycleActionStatus(item.id, item.status)}
                                                         title="Click to advance status"
-                                                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 7, padding: "5px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer", color: "var(--cl-foreground)", whiteSpace: "nowrap", transition: "all 0.15s" }}
-                                                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
-                                                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                                                        className="px-3 py-1.5 rounded-full text-[11px] font-bold border border-neutral-200 text-neutral-700 hover:bg-[#FFF2EC] hover:border-[#FA5A2A] hover:text-[#FA5A2A] transition-all whitespace-nowrap"
                                                     >
                                                         {item.status === "done" ? "Reopen" : "Advance →"}
                                                     </button>
@@ -512,30 +510,6 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                     </div>
                 )}
             </div>
-
-            <style jsx>{`
-        .header-card { background: var(--cl-muted); border: 1px solid var(--cl-border); border-radius: 14px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 18px; }
-        .meta-item { display: flex; flex-direction: column; gap: 4px; }
-        .meta-label { font-size: 10px; font-weight: 600; color: var(--cl-muted-foreground); text-transform: uppercase; letter-spacing: 0.07em; }
-        .meta-value { font-size: 13px; font-weight: 600; color: var(--cl-foreground); }
-        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--cl-border); border-radius: 10px; padding: 4px; }
-        .tab-btn { display: flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--cl-muted-foreground); border: none; background: transparent; cursor: pointer; transition: all 0.15s; }
-        .tab-btn:hover { background: rgba(255,255,255,0.05); color: var(--cl-foreground); }
-        .tab-active { background: rgba(255,255,255,0.1) !important; color: #60A5FA !important; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
-        .tab-content { animation: fadeIn 0.2s ease-out; }
-        .timeline { display: flex; flex-direction: column; gap: 0; }
-        .timeline-item { display: flex; gap: 14px; }
-        .timeline-connector { display: flex; flex-direction: column; align-items: center; }
-        .timeline-line { width: 2px; flex: 1; background: var(--cl-border); margin: 4px 0; min-height: 20px; }
-        .timeline-body { flex: 1; background: var(--cl-muted); border: 1px solid var(--cl-border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
-        .rca-card { background: var(--cl-muted); border: 1px solid var(--cl-border); border-radius: 14px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .rca-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .rca-label { font-size: 10px; font-weight: 600; color: var(--cl-muted-foreground); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
-        .rca-text { font-size: 14px; color: var(--cl-foreground); line-height: 1.7; }
-        .action-card { background: var(--cl-muted); border: 1px solid var(--cl-border); border-radius: 10px; padding: 16px; transition: all 0.2s; position: relative; }
-        .action-card:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.4); transform: translateY(-1px); }
-      `}</style>
         </div>
     );
 }
