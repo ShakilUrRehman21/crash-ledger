@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { actionItems } from "@/db/schema";
 import { createActionItemSchema, updateActionItemSchema } from "@/lib/validators";
 import { requireWorkspaceAccess } from "@/lib/auth";
+import { incidentInWorkspace } from "@/lib/incident-access";
 import { eq, and, isNull } from "drizzle-orm";
 
 // POST /api/action-items
@@ -14,6 +15,7 @@ export async function POST(req: NextRequest) {
 
         const { workspaceId, incidentId, dueDate, ...rest } = parsed.data;
         await requireWorkspaceAccess(workspaceId, "engineer");
+        if (incidentId && !(await incidentInWorkspace(incidentId, workspaceId))) return NextResponse.json({ error: "Incident not found" }, { status: 404 });
 
         const [item] = await db
             .insert(actionItems)

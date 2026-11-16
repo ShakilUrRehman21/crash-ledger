@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { rootCauseAnalysis, incidents } from "@/db/schema";
 import { createRCASchema } from "@/lib/validators";
 import { requireWorkspaceAccess } from "@/lib/auth";
+import { incidentInWorkspace } from "@/lib/incident-access";
 import { eq, and, isNull } from "drizzle-orm";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -62,6 +63,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!workspaceId) return NextResponse.json({ error: "workspaceId required" }, { status: 400 });
 
         await requireWorkspaceAccess(workspaceId, "viewer");
+        if (!(await incidentInWorkspace(id, workspaceId))) return NextResponse.json({ error: "Incident not found" }, { status: 404 });
 
         const rca = await db.query.rootCauseAnalysis.findFirst({
             where: eq(rootCauseAnalysis.incidentId, id),

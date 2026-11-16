@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { actionItems } from "@/db/schema";
 import { updateActionItemSchema } from "@/lib/validators";
 import { requireWorkspaceAccess } from "@/lib/auth";
+import { actionItemInWorkspace } from "@/lib/incident-access";
 import { eq } from "drizzle-orm";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -16,6 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
         await requireWorkspaceAccess(workspaceId, "engineer");
+        if (!(await actionItemInWorkspace(id, workspaceId))) return NextResponse.json({ error: "Action item not found" }, { status: 404 });
 
         const { dueDate, ...rest } = parsed.data;
         const [updated] = await db

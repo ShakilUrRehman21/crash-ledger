@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { incidentTimelineEvents, incidents } from "@/db/schema";
 import { createTimelineEventSchema } from "@/lib/validators";
 import { requireWorkspaceAccess } from "@/lib/auth";
+import { incidentInWorkspace } from "@/lib/incident-access";
 import { eq, and, isNull, asc } from "drizzle-orm";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -13,6 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!workspaceId) return NextResponse.json({ error: "workspaceId required" }, { status: 400 });
 
         await requireWorkspaceAccess(workspaceId, "viewer");
+        if (!(await incidentInWorkspace(id, workspaceId))) return NextResponse.json({ error: "Incident not found" }, { status: 404 });
 
         const events = await db.query.incidentTimelineEvents.findMany({
             where: eq(incidentTimelineEvents.incidentId, id),
@@ -37,6 +39,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
 
         const { user } = await requireWorkspaceAccess(workspaceId, "engineer");
+        if (!(await incidentInWorkspace(id, workspaceId))) return NextResponse.json({ error: "Incident not found" }, { status: 404 });
 
         const [event] = await db
             .insert(incidentTimelineEvents)
