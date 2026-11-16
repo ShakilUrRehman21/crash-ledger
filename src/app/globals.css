@@ -208,3 +208,7 @@ a, button { transition:color .2s, background-color .2s, border-color .2s, box-sh
 button:not(:disabled):active { transform:scale(.97); }
 html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
 @media (prefers-reduced-motion:reduce) { main > *, main .grid > * { animation:none !important; } html { scroll-behavior:auto; } }
+
+/* DASHBOARD 2026 */
+main .bg-white[class*="border-[#D9D3C7]"] { border:2px solid #0D0D0D !important; box-shadow:none !important; }
+main h2, main h3 { font-family:'Archivo Black',Impact,sans-serif; font-weight:400 !important; text-transform:uppercase; letter-spacing:-.01em; }

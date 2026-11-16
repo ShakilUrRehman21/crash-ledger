@@ -71,7 +71,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-[#111826] text-white flex flex-col fixed left-0 top-0 bottom-0 z-40 border-r border-white/10 selection:bg-[#FF4D1A]/30">
+    <aside className="w-64 min-h-screen bg-[#0D0D0D] text-white flex flex-col fixed left-0 top-0 bottom-0 z-40 border-r border-white/10 selection:bg-[#FF4D1A]/30">
       
       {/* Brand & Workspace Switcher */}
       <div className="p-4 border-b border-white/10 relative">
@@ -92,7 +92,7 @@ export function Sidebar() {
 
         {/* Workspace Dropdown */}
         {openWsMenu && (
-          <div className="absolute top-full left-3 right-3 mt-1 bg-[#1A2234] border border-white/15 rounded-2xl p-2 z-50 shadow-2xl backdrop-blur-xl">
+          <div className="absolute top-full left-3 right-3 mt-1 bg-[#1A1A1A] border border-white/15 rounded-2xl p-2 z-50 shadow-2xl backdrop-blur-xl">
             <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
               Switch Workspace
             </div>
@@ -140,7 +140,7 @@ export function Sidebar() {
               href={href}
               className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 isActive
-                  ? "bg-[#FF4D1A] text-white shadow-lg shadow-[#FF4D1A]/30 translate-x-0.5"
+                  ? "bg-[#FF4D1A] text-white  translate-x-0.5"
                   : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
             >

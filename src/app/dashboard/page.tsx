@@ -43,7 +43,7 @@ import { safeJson } from "@/lib/safe-json";
 const SEVERITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   critical: { bg: "#FEF2F2", text: "#DC2626", border: "#FCA5A5" },
   high: { bg: "#FFF7ED", text: "#EA580C", border: "#FDBA74" },
-  medium: { bg: "#FFFBEB", text: "#D97706", border: "#FCD34D" },
+  medium: { bg: "#FFFBEB", text: "#FF4D1A", border: "#FCD34D" },
   low: { bg: "#F1F5F9", text: "#64748B", border: "#CBD5E1" },
 };
 
@@ -75,7 +75,7 @@ function StatCard({
   iconBg: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-[#D9D3C7] shadow-sm hover:shadow-md hover:border-[#FF4D1A]/30 transition-all flex flex-col justify-between">
+    <div className="bg-white p-4 border-2 border-[#0D0D0D] shadow-[4px_4px_0_#0D0D0D] hover:shadow-[6px_6px_0_#FF4D1A] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all flex flex-col justify-between">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
           {label}
@@ -118,7 +118,7 @@ function StatCard({
 
 // Circular Risk Gauge (Image 2 Donut/Progress Style)
 function RiskGauge({ value }: { value: number }) {
-  const color = value >= 70 ? "#EF4444" : value >= 40 ? "#F59E0B" : "#10B981";
+  const color = value >= 70 ? "#EF4444" : value >= 40 ? "#FF4D1A" : "#0D0D0D";
   const label = value >= 70 ? "High Risk" : value >= 40 ? "Moderate" : "Healthy";
 
   return (
@@ -299,7 +299,7 @@ export default function DashboardPage() {
   const severityData = [
     { name: "Critical", value: severityDist?.critical || 0, color: "#EF4444" },
     { name: "High", value: severityDist?.high || 0, color: "#FF4D1A" },
-    { name: "Medium", value: severityDist?.medium || 0, color: "#F59E0B" },
+    { name: "Medium", value: severityDist?.medium || 0, color: "#FF4D1A" },
     { name: "Low", value: severityDist?.low || 0, color: "#94A3B8" },
   ].filter(d => d.value > 0);
 
@@ -324,18 +324,8 @@ export default function DashboardPage() {
       {/* Main Content Canvas */}
       <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
         
-        {/* TOP STAT METRIC CARDS (Elegent inspired: 6 vibrant cards) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-          
-          {/* Card 1: Total Incidents (Sky Blue) */}
-          <StatCard
-            label="Total Incidents"
-            value={metrics.totalIncidents}
-            sub="Logged to date"
-            icon={AlertTriangle}
-            iconColor="#0284C7"
-            iconBg="#E0F2FE"
-          />
+        {/* KEY METRICS */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
           {/* Card 2: Open Incidents (Coral Red) */}
           <StatCard
@@ -343,8 +333,8 @@ export default function DashboardPage() {
             value={metrics.openIncidents}
             sub={metrics.investigatingIncidents > 0 ? `+${metrics.investigatingIncidents} in triage` : "All clear"}
             icon={AlertCircle}
-            iconColor="#DC2626"
-            iconBg="#FEE2E2"
+            iconColor="#0D0D0D"
+            iconBg="#FF4D1A"
           />
 
           {/* Card 3: Critical P1 (Warm Orange) */}
@@ -353,8 +343,8 @@ export default function DashboardPage() {
             value={metrics.criticalIncidents}
             sub={`${metrics.totalIncidents > 0 ? (metrics.criticalIncidentRatio * 100).toFixed(1) : "0"}% of total`}
             icon={Zap}
-            iconColor="#FF4D1A"
-            iconBg="#FFE6DC"
+            iconColor="#0D0D0D"
+            iconBg="#FF4D1A"
           />
 
           {/* Card 4: MTTR (Mint Green) */}
@@ -363,8 +353,8 @@ export default function DashboardPage() {
             value={metrics.mttr !== null ? formatMinutes(metrics.mttr) : "—"}
             sub={metrics.mttr === null ? "Requires 1 resolved" : "Mean recovery time"}
             icon={Timer}
-            iconColor="#059669"
-            iconBg="#D1FAE5"
+            iconColor="#0D0D0D"
+            iconBg="#FF4D1A"
           />
 
           {/* Card 5: MTBF (Royal Purple) */}
@@ -373,18 +363,8 @@ export default function DashboardPage() {
             value={metrics.mtbf !== null ? formatHours(metrics.mtbf) : "—"}
             sub={metrics.mtbf === null ? "Requires 2 incidents" : "Between failures"}
             icon={Clock}
-            iconColor="#7C3AED"
-            iconBg="#EDE9FE"
-          />
-
-          {/* Card 6: Downtime (Amber Gold) */}
-          <StatCard
-            label="Total Outage"
-            value={formatMinutes(metrics.totalDowntimeMinutes || 0)}
-            sub="Cumulative minutes"
-            icon={TrendingDown}
-            iconColor="#D97706"
-            iconBg="#FEF3C7"
+            iconColor="#0D0D0D"
+            iconBg="#FF4D1A"
           />
 
         </div>
@@ -429,13 +409,13 @@ export default function DashboardPage() {
                       <span className="text-neutral-600">Detected</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#10B981]" />
+                      <span className="w-3 h-3 rounded-full bg-[#0D0D0D]" />
                       <span className="text-neutral-600">Resolved</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="h-64 w-full">
+                <div className="h-44 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartDays} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
@@ -467,10 +447,10 @@ export default function DashboardPage() {
                         type="monotone"
                         dataKey="resolved"
                         name="Resolved & Mitigated"
-                        stroke="#10B981"
+                        stroke="#0D0D0D"
                         strokeWidth={3}
-                        dot={{ r: 4, fill: "#FFFFFF", stroke: "#10B981", strokeWidth: 2 }}
-                        activeDot={{ r: 6, fill: "#10B981", stroke: "#FFFFFF", strokeWidth: 2 }}
+                        dot={{ r: 4, fill: "#FFFFFF", stroke: "#0D0D0D", strokeWidth: 2 }}
+                        activeDot={{ r: 6, fill: "#0D0D0D", stroke: "#FFFFFF", strokeWidth: 2 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -503,7 +483,7 @@ export default function DashboardPage() {
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
-                          data={severityData.length > 0 ? severityData : [{ name: "Healthy", value: 1, color: "#10B981" }]}
+                          data={severityData.length > 0 ? severityData : [{ name: "Healthy", value: 1, color: "#0D0D0D" }]}
                           cx="50%"
                           cy="50%"
                           innerRadius={42}
@@ -512,7 +492,7 @@ export default function DashboardPage() {
                           dataKey="value"
                           stroke="none"
                         >
-                          {(severityData.length > 0 ? severityData : [{ name: "Healthy", value: 1, color: "#10B981" }]).map((entry, i) => (
+                          {(severityData.length > 0 ? severityData : [{ name: "Healthy", value: 1, color: "#0D0D0D" }]).map((entry, i) => (
                             <Cell key={i} fill={entry.color} />
                           ))}
                         </Pie>
