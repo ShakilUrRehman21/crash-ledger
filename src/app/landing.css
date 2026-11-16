@@ -48,3 +48,5 @@
 @media (max-width:900px){.cl-hero-row,.cl-steps{grid-template-columns:1fr}.cl-step{border:0;margin:0}.cl-grid{grid-template-columns:1fr 1fr}.cl-nav nav a:not(.cl-btn){display:none}}
 @media (max-width:560px){.cl-grid{grid-template-columns:1fr}.cl-wrap{padding:0 20px}}
 @media (prefers-reduced-motion:reduce){.cl-tick-track,.cl-rise{animation:none}}
+.cl-cell{display:flex}.cl-cell>.cl-card{flex:1}
+.cl-cta .cl-wrap{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap}

@@ -1,7 +1,7 @@
 @echo off
 title CrashLedger - localhost:3001
 cd /d "%~dp0"
-if not exist node_modules (
+if not exist node_modules\framer-motion (
   echo Installing dependencies...
   call npm install
 )

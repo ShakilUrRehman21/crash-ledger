@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Archivo_Black, JetBrains_Mono } from "next/font/google";
 import "./landing.css";
+import { Reveal, Stagger, StaggerItem, Parallax, ScrollProgress } from "../components/motion/Motion";
 
 const display = Archivo_Black({ weight: "400", subsets: ["latin"], variable: "--cl-display" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--cl-mono" });
@@ -29,6 +30,7 @@ const features = [
 export default function LandingPage() {
   return (
     <div className={`cl ${display.variable} ${mono.variable}`}>
+      <ScrollProgress color="#ff4d1a" />
       <div className="cl-tick" aria-hidden>
         <div className="cl-tick-track">
           {[...ticker, ...ticker].map(([id, sev, what, st], i) => (
@@ -65,6 +67,7 @@ export default function LandingPage() {
                 <Link href="/dashboard" className="cl-link">Open dashboard &rarr;</Link>
               </div>
             </div>
+            <Parallax offset={36}>
             <div className="cl-table cl-rise cl-d3" aria-label="Example incident ledger">
               <div className="cl-tr cl-th"><span>ID</span><span>FAILURE</span><span>STATUS</span></div>
               <div className="cl-tr"><span>INC-0412</span><span>payment-api timeout</span><span className="cl-hot">OPEN</span></div>
@@ -72,42 +75,43 @@ export default function LandingPage() {
               <div className="cl-tr"><span>INC-0398</span><span>dns misconfig</span><span>RCA DONE</span></div>
               <div className="cl-tr"><span>INC-0391</span><span>disk pressure on worker-2</span><span>RCA DONE</span></div>
             </div>
+            </Parallax>
           </div>
         </section>
 
         <section id="how" className="cl-dark">
           <div className="cl-wrap">
-            <p className="cl-kicker">// HOW IT WORKS</p>
-            <div className="cl-steps">
+            <Reveal><p className="cl-kicker">// HOW IT WORKS</p></Reveal>
+            <Stagger className="cl-steps" gap={0.14}>
               {steps.map(([n, t, d]) => (
-                <div key={n} className="cl-step">
+                <StaggerItem key={n} className="cl-step">
                   <span className="cl-num">{n}</span>
                   <h3>{t}</h3>
                   <p>{d}</p>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           </div>
         </section>
 
         <section id="features" className="cl-wrap cl-features">
-          <h2>Everything a post-mortem<br />should have been.</h2>
-          <div className="cl-grid">
+          <Reveal><h2>Everything a post-mortem<br />should have been.</h2></Reveal>
+          <Stagger className="cl-grid">
             {features.map(([t, d], i) => (
-              <div key={t} className="cl-card">
+              <StaggerItem key={t} className="cl-cell"><div className="cl-card">
                 <span className="cl-num">0{i + 1}</span>
                 <h3>{t}</h3>
                 <p>{d}</p>
-              </div>
+              </div></StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
 
         <section className="cl-cta">
-          <div className="cl-wrap">
+          <Reveal className="cl-wrap">
             <h2>The next outage is already scheduled.<br />Be ready for it.</h2>
             <Link href="/sign-up" className="cl-btn cl-btn-inv">Start your ledger &#8599;</Link>
-          </div>
+          </Reveal>
         </section>
       </main>
 
