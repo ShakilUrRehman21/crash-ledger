@@ -16,7 +16,7 @@
 .cl-btn-inv{background:var(--cl-paper);box-shadow:6px 6px 0 var(--cl-sig)}
 .cl-link{font-weight:700;border-bottom:2px solid var(--cl-ink);padding-bottom:2px}
 .cl-hero{padding-top:64px;padding-bottom:96px}
-.cl-hero h1{font-family:var(--cl-display),Impact,sans-serif;font-weight:400;font-size:clamp(56px,10vw,148px);line-height:.86;letter-spacing:-.045em;text-transform:uppercase}
+.cl-hero h1{font-family:var(--cl-display),Impact,sans-serif;font-weight:400;font-size:clamp(38px,10vw,148px);line-height:.86;letter-spacing:-.045em;text-transform:uppercase}
 .cl-hero h1 span{color:var(--cl-sig)}
 .cl-hero-row{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:end;margin-top:48px}
 .cl-lead{font-size:15px;line-height:1.75;max-width:50ch}
@@ -50,3 +50,4 @@
 @media (prefers-reduced-motion:reduce){.cl-tick-track,.cl-rise{animation:none}}
 .cl-cell{display:flex}.cl-cell>.cl-card{flex:1}
 .cl-cta .cl-wrap{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap}
+@media (max-width:560px){.cl-tr{grid-template-columns:78px 1fr 72px;font-size:11px}.cl-table{box-shadow:6px 6px 0 var(--cl-ink)}.cl-cta .cl-wrap{flex-direction:column;align-items:flex-start}.cl-tick{font-size:11px}}
