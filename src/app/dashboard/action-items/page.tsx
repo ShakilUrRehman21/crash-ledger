@@ -7,9 +7,9 @@ import Link from "next/link";
 import { safeJson } from "@/lib/safe-json";
 
 const COLUMNS = [
-    { key: "todo", label: "To Do", color: "#64748B", bg: "#F1F5F9" },
-    { key: "in_progress", label: "In Progress", color: "#EA580C", bg: "#FFF7ED" },
-    { key: "done", label: "Done", color: "#059669", bg: "#ECFDF5" },
+    { key: "todo", label: "To Do", color: "#0D0D0D", bg: "#E9E4DA" },
+    { key: "in_progress", label: "In Progress", color: "#FF4D1A", bg: "#FFE6DC" },
+    { key: "done", label: "Done", color: "#0D0D0D", bg: "#FFFFFF" },
 ] as const;
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -77,10 +77,10 @@ export default function ActionItemsPage() {
     }
 
     const summary = [
-        { label: "Total Tasks", val: items.length, color: "#0284C7", bg: "#E0F2FE", icon: AlertTriangle },
-        { label: "In Progress", val: items.filter((i) => i.status === "in_progress").length, color: "#EA580C", bg: "#FFE6DC", icon: Clock },
-        { label: "Completed", val: items.filter((i) => i.status === "done").length, color: "#059669", bg: "#D1FAE5", icon: CheckCircle2 },
-        { label: "Overdue", val: items.filter(isOverdueFn).length, color: "#DC2626", bg: "#FEE2E2", icon: AlertCircle },
+        { label: "Total Tasks", val: items.length, color: "#0D0D0D", bg: "#FF4D1A", icon: AlertTriangle },
+        { label: "In Progress", val: items.filter((i) => i.status === "in_progress").length, color: "#0D0D0D", bg: "#FF4D1A", icon: Clock },
+        { label: "Completed", val: items.filter((i) => i.status === "done").length, color: "#0D0D0D", bg: "#FF4D1A", icon: CheckCircle2 },
+        { label: "Overdue", val: items.filter(isOverdueFn).length, color: "#0D0D0D", bg: "#FF4D1A", icon: AlertCircle },
     ];
 
     return (

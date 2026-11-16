@@ -212,3 +212,6 @@ html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
 /* DASHBOARD 2026 */
 main .bg-white[class*="border-[#D9D3C7]"] { border:2px solid #0D0D0D !important; box-shadow:none !important; }
 main h2, main h3 { font-family:'Archivo Black',Impact,sans-serif; font-weight:400 !important; text-transform:uppercase; letter-spacing:-.01em; }
+main input[class*="rounded-full"], main select[class*="rounded-full"], main button[class*="rounded-full"][class*="px-4"], main div[class*="rounded-full"][class*="max-w-md"] { border-radius:2px !important; }
+main div[class*="rounded-full"][class*="max-w-md"], main select[class*="bg-[#F2EFE8]"] { border:2px solid #0D0D0D !important; background:#fff !important; }
+main [style*="border: 1px solid rgb(13, 13, 13)"], main [style*="border-color: rgb(13, 13, 13)"] { border-width:2px !important; }

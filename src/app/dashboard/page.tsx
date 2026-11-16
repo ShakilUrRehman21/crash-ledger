@@ -41,17 +41,17 @@ import Link from "next/link";
 import { safeJson } from "@/lib/safe-json";
 
 const SEVERITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  critical: { bg: "#FEF2F2", text: "#DC2626", border: "#FCA5A5" },
-  high: { bg: "#FFF7ED", text: "#EA580C", border: "#FDBA74" },
-  medium: { bg: "#FFFBEB", text: "#FF4D1A", border: "#FCD34D" },
-  low: { bg: "#F1F5F9", text: "#64748B", border: "#CBD5E1" },
+  critical: { bg: "#FF4D1A", text: "#0D0D0D", border: "#0D0D0D" },
+  high: { bg: "#FFE6DC", text: "#C2360B", border: "#FF4D1A" },
+  medium: { bg: "#F2EFE8", text: "#0D0D0D", border: "#0D0D0D" },
+  low: { bg: "#FFFFFF", text: "#57534C", border: "#D9D3C7" },
 };
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  open: { bg: "#EFF6FF", text: "#2563EB", border: "#BFDBFE" },
-  investigating: { bg: "#FFF7ED", text: "#EA580C", border: "#FED7AA" },
-  resolved: { bg: "#ECFDF5", text: "#059669", border: "#A7F3D0" },
-  archived: { bg: "#F8FAFC", text: "#94A3B8", border: "#E2E8F0" },
+  open: { bg: "#0D0D0D", text: "#F2EFE8", border: "#0D0D0D" },
+  investigating: { bg: "#FFE6DC", text: "#C2360B", border: "#FF4D1A" },
+  resolved: { bg: "#FFFFFF", text: "#0D0D0D", border: "#0D0D0D" },
+  archived: { bg: "#F2EFE8", text: "#8A847A", border: "#D9D3C7" },
 };
 
 // Stat Card (Elegent inspired colorful icon chips)

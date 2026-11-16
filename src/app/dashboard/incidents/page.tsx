@@ -10,17 +10,17 @@ const SEVERITIES = ["all", "critical", "high", "medium", "low"];
 const STATUSES = ["all", "open", "investigating", "resolved", "archived"];
 
 const SEVERITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  critical: { bg: "#FEF2F2", text: "#DC2626", border: "#FCA5A5" },
-  high: { bg: "#FFF7ED", text: "#EA580C", border: "#FDBA74" },
-  medium: { bg: "#FFFBEB", text: "#D97706", border: "#FCD34D" },
-  low: { bg: "#F1F5F9", text: "#64748B", border: "#CBD5E1" },
+  critical: { bg: "#FF4D1A", text: "#0D0D0D", border: "#0D0D0D" },
+  high: { bg: "#FFE6DC", text: "#C2360B", border: "#FF4D1A" },
+  medium: { bg: "#F2EFE8", text: "#0D0D0D", border: "#0D0D0D" },
+  low: { bg: "#FFFFFF", text: "#57534C", border: "#D9D3C7" },
 };
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  open: { bg: "#EFF6FF", text: "#2563EB", border: "#BFDBFE" },
-  investigating: { bg: "#FFF7ED", text: "#EA580C", border: "#FED7AA" },
-  resolved: { bg: "#ECFDF5", text: "#059669", border: "#A7F3D0" },
-  archived: { bg: "#F8FAFC", text: "#94A3B8", border: "#E2E8F0" },
+  open: { bg: "#0D0D0D", text: "#F2EFE8", border: "#0D0D0D" },
+  investigating: { bg: "#FFE6DC", text: "#C2360B", border: "#FF4D1A" },
+  resolved: { bg: "#FFFFFF", text: "#0D0D0D", border: "#0D0D0D" },
+  archived: { bg: "#F2EFE8", text: "#8A847A", border: "#D9D3C7" },
 };
 
 function Badge({ label, colors }: { label: string; colors: { bg: string; text: string; border: string } }) {
@@ -89,10 +89,10 @@ export default function IncidentsPage() {
         {/* Metric Summary Counters */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total", val: allIncidents.length, color: "#0D0D0D", bg: "#FFFFFF", border: "#D9D3C7" },
-            { label: "Open", val: allIncidents.filter((i) => i.status === "open").length, color: "#2563EB", bg: "#EFF6FF", border: "#BFDBFE" },
-            { label: "Investigating", val: allIncidents.filter((i) => i.status === "investigating").length, color: "#EA580C", bg: "#FFF7ED", border: "#FED7AA" },
-            { label: "Critical P1", val: allIncidents.filter((i) => i.severity === "critical").length, color: "#DC2626", bg: "#FEF2F2", border: "#FCA5A5" },
+            { label: "Total", val: allIncidents.length, color: "#0D0D0D", bg: "#FFFFFF", border: "#0D0D0D" },
+            { label: "Open", val: allIncidents.filter((i) => i.status === "open").length, color: "#FF4D1A", bg: "#FFFFFF", border: "#0D0D0D" },
+            { label: "Investigating", val: allIncidents.filter((i) => i.status === "investigating").length, color: "#0D0D0D", bg: "#FFFFFF", border: "#0D0D0D" },
+            { label: "Critical P1", val: allIncidents.filter((i) => i.severity === "critical").length, color: "#FF4D1A", bg: "#FFFFFF", border: "#0D0D0D" },
           ].map(({ label, val, color, bg, border }) => (
             <div
               key={label}

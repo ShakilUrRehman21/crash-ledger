@@ -10,11 +10,11 @@ import { BarChart2 } from "lucide-react";
 import { safeJson } from "@/lib/safe-json";
 
 const card = "bg-white rounded-2xl border border-[#D9D3C7] shadow-sm p-6";
-const axisTick = { fontSize: 11, fill: "#9CA3AF" };
+const axisTick = { fontSize: 11, fill: "#8A847A" };
 const tooltipStyle = { borderRadius: 12, border: "1px solid #D9D3C7", fontSize: 12, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" };
 
 function RiskBar({ value }: { value: number }) {
-    const color = value >= 70 ? "#EF4444" : value >= 40 ? "#F59E0B" : "#10B981";
+    const color = value >= 70 ? "#0D0D0D" : value >= 40 ? "#FF9A73" : "#0D0D0D";
     return (
         <div className="flex items-center gap-2">
             <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden">
@@ -159,7 +159,7 @@ export default function AnalyticsPage() {
                                         <stop offset="95%" stopColor="#FF4D1A" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#E9E4DA" vertical={false} />
                                 <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
                                 <YAxis tick={axisTick} axisLine={false} tickLine={false} />
                                 <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, "MTTR"]} />
@@ -174,15 +174,15 @@ export default function AnalyticsPage() {
                             <AreaChart data={trendData} margin={{ left: -20, right: 8 }}>
                                 <defs>
                                     <linearGradient id="mtbfGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.25} />
-                                        <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#0D0D0D" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#0D0D0D" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#E9E4DA" vertical={false} />
                                 <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
                                 <YAxis tick={axisTick} axisLine={false} tickLine={false} />
                                 <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v}h`, "MTBF"]} />
-                                <Area type="monotone" dataKey="mtbf" stroke="#10B981" strokeWidth={3} fill="url(#mtbfGrad)" dot={{ r: 4, fill: "#fff", stroke: "#10B981", strokeWidth: 2 }} />
+                                <Area type="monotone" dataKey="mtbf" stroke="#0D0D0D" strokeWidth={3} fill="url(#mtbfGrad)" dot={{ r: 4, fill: "#fff", stroke: "#0D0D0D", strokeWidth: 2 }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -192,11 +192,11 @@ export default function AnalyticsPage() {
                     <ChartHeader title="Operational Risk Index Trend" desc="Lower risk score indicates better operational health" />
                     <ResponsiveContainer width="100%" height={200}>
                         <LineChart data={trendData} margin={{ left: -20, right: 8 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E9E4DA" vertical={false} />
                             <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
                             <YAxis domain={[0, 100]} tick={axisTick} axisLine={false} tickLine={false} />
                             <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v}/100`, "Risk Index"]} />
-                            <Line type="monotone" dataKey="risk" stroke="#8B5CF6" strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: "#8B5CF6", strokeWidth: 2 }} />
+                            <Line type="monotone" dataKey="risk" stroke="#0D0D0D" strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: "#0D0D0D", strokeWidth: 2 }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -205,15 +205,15 @@ export default function AnalyticsPage() {
                     <ChartHeader title="Incident Frequency by Component" desc="Stacked by severity" />
                     <ResponsiveContainer width="100%" height={240}>
                         <BarChart data={frequencyData} margin={{ left: -20, right: 8 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                            <XAxis dataKey="component" tick={{ fontSize: 12, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#E9E4DA" vertical={false} />
+                            <XAxis dataKey="component" tick={{ fontSize: 12, fill: "#57534C" }} axisLine={false} tickLine={false} />
                             <YAxis tick={axisTick} allowDecimals={false} axisLine={false} tickLine={false} />
                             <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(250,90,42,0.05)" }} />
                             <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
-                            <Bar dataKey="critical" name="Critical" stackId="a" fill="#EF4444" />
+                            <Bar dataKey="critical" name="Critical" stackId="a" fill="#0D0D0D" />
                             <Bar dataKey="high" name="High" stackId="a" fill="#FF4D1A" />
-                            <Bar dataKey="medium" name="Medium" stackId="a" fill="#F59E0B" />
-                            <Bar dataKey="low" name="Low" stackId="a" fill="#CBD5E1" radius={[6, 6, 0, 0]} />
+                            <Bar dataKey="medium" name="Medium" stackId="a" fill="#FF9A73" />
+                            <Bar dataKey="low" name="Low" stackId="a" fill="#D9D3C7" radius={[0, 0, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
