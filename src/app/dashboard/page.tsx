@@ -401,7 +401,7 @@ export default function DashboardPage() {
             </p>
             <Link
               href={`/dashboard/incidents/new?workspaceId=${workspaceId}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-lg shadow-[#FF4D1A]/25 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-white bg-[#FF4D1A] border-2 border-[#0D0D0D] shadow-[4px_4px_0_#0D0D0D] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#0D0D0D] transition-all"
             >
               Log Your First Incident
             </Link>
@@ -704,7 +704,7 @@ export default function DashboardPage() {
                           </div>
                           <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
                             <div
-                              className="bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] h-2 rounded-full"
+                              className="bg-[#FF4D1A] h-2 rounded-full"
                               style={{ width: `${Math.min(100, (d.minutes / (downtimeData[0]?.minutes || 1)) * 100)}%` }}
                             />
                           </div>

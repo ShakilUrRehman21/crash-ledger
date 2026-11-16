@@ -4,7 +4,7 @@ import { Logo } from "@/components/brand/Logo";
 export default function SignInPage() {
     return (
         <div className="min-h-screen bg-[#F2EFE8] grid lg:grid-cols-2">
-            <div className="hidden lg:flex relative overflow-hidden m-4 rounded-[32px] bg-gradient-to-br from-[#FF4D1A] via-[#FF6A3D] to-[#FF8256] text-white p-12 flex-col justify-between">
+            <div className="hidden lg:flex relative overflow-hidden m-4 rounded-[32px] bg-[#0D0D0D] text-[#F2EFE8] border-b-4 border-[#FF4D1A] p-12 flex-col justify-between">
                 <div className="absolute top-20 right-16 w-32 h-32 rounded-full bg-white/15" />
                 <div className="absolute bottom-24 left-10 w-48 h-48 rounded-full bg-[#121826]/10" />
                 <div className="relative"><Logo variant="light" size={44} /></div>

@@ -47,7 +47,7 @@ export function TopBar({ title, subtitle, workspaceId, showCreateIncident }: Top
         {showCreateIncident && workspaceId && (
           <Link
             href={`/dashboard/incidents/new?workspaceId=${workspaceId}`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-md shadow-[#FF4D1A]/25 transition-all transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-[#FF4D1A] border-2 border-[#0D0D0D] shadow-[4px_4px_0_#0D0D0D] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#0D0D0D] transition-all transform hover:-translate-y-0.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Incident</span>

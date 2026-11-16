@@ -156,7 +156,7 @@ export function Sidebar() {
       </nav>
 
       {/* Upgrade Banner (Pro) */}
-      <div className="p-3 m-3 rounded-2xl bg-gradient-to-br from-[#1E2738] to-[#171E2D] border border-white/10">
+      <div className="p-3 m-3 rounded-2xl bg-[#1A1A1A] border border-white/10">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
             <Zap className="w-3.5 h-3.5" />
@@ -168,7 +168,7 @@ export function Sidebar() {
         </p>
         <Link
           href="/dashboard/settings"
-          className="block w-full py-2 rounded-xl text-center text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-md shadow-[#FF4D1A]/20 transition-opacity"
+          className="block w-full py-2 rounded-xl text-center text-xs font-bold text-white bg-[#FF4D1A] border-2 border-[#0D0D0D] shadow-[4px_4px_0_#0D0D0D] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#0D0D0D] transition-all"
         >
           Upgrade to Pro
         </Link>

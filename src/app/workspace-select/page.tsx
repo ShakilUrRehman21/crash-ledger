@@ -92,7 +92,7 @@ export default function WorkspaceSelectorPage() {
     return (
         <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center p-4 sm:p-6">
             <div className="w-full max-w-lg">
-                <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#FF4D1A] via-[#FF6A3D] to-[#FF8256] text-white text-center px-6 py-10 mb-6 shadow-2xl shadow-[#FF4D1A]/20">
+                <div className="relative overflow-hidden rounded-[28px] bg-[#0D0D0D] text-[#F2EFE8] border-b-4 border-[#FF4D1A] text-center px-6 py-10 mb-6 shadow-2xl shadow-[#FF4D1A]/20">
                     <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
                     <div className="absolute -bottom-8 -right-4 w-32 h-32 rounded-full bg-white/15" />
                     <div className="relative">
@@ -156,7 +156,7 @@ export default function WorkspaceSelectorPage() {
                                 <button
                                     onClick={handleCreate}
                                     disabled={creating}
-                                    className="flex-[2] py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] shadow-md shadow-[#FF4D1A]/25 hover:opacity-95 disabled:opacity-50 transition-all"
+                                    className="flex-[2] py-2.5 rounded-full text-xs font-bold text-white bg-[#FF4D1A] border-2 border-[#0D0D0D] shadow-[4px_4px_0_#0D0D0D] hover:shadow-[2px_2px_0_#0D0D0D] disabled:opacity-50 transition-all"
                                 >
                                     {creating ? "Creating..." : "Create & Enter"}
                                 </button>

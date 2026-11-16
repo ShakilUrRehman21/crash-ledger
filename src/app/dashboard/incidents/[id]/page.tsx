@@ -40,7 +40,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all";
 const labelCls = "block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2";
 const cardCls = "bg-white rounded-2xl border border-[#D9D3C7] shadow-sm";
-const primaryBtn = "inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-md shadow-[#FF4D1A]/25 transition-all";
+const primaryBtn = "inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-[#FF4D1A] border-2 border-[#0D0D0D] shadow-[4px_4px_0_#0D0D0D] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#0D0D0D] transition-all";
 
 function fmt(dateStr: string | null) {
     if (!dateStr) return "—";
