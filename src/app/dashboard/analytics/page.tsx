@@ -7,6 +7,7 @@ import {
     BarChart, Bar, Legend, AreaChart, Area
 } from "recharts";
 import { BarChart2 } from "lucide-react";
+import { safeJson } from "@/lib/safe-json";
 
 const card = "bg-white rounded-2xl border border-[#D9D3C7] shadow-sm p-6";
 const axisTick = { fontSize: 11, fill: "#9CA3AF" };
@@ -49,7 +50,7 @@ export default function AnalyticsPage() {
     useEffect(() => {
         if (!workspaceId) return;
         fetch(`/api/incidents?workspaceId=${workspaceId}`)
-            .then(res => res.json())
+            .then((res) => safeJson(res))
             .then(data => {
                 if (data.incidents) setIncidents(data.incidents);
                 setLoading(false);

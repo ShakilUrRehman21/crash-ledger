@@ -38,6 +38,7 @@ import {
 } from "recharts";
 import { formatHours, formatMinutes } from "@/lib/utils";
 import Link from "next/link";
+import { safeJson } from "@/lib/safe-json";
 
 const SEVERITY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   critical: { bg: "#FEF2F2", text: "#DC2626", border: "#FCA5A5" },
@@ -189,7 +190,7 @@ export default function DashboardPage() {
     } else {
       // Fetch default workspace
       fetch("/api/workspace")
-        .then(r => r.json())
+        .then((r) => safeJson(r))
         .then(d => {
           if (d.workspaces && d.workspaces.length > 0) {
             const first = d.workspaces[0];
@@ -209,8 +210,8 @@ export default function DashboardPage() {
 
     setLoading(true);
     Promise.all([
-      fetch(`/api/dashboard/metrics?workspaceId=${workspaceId}`).then(res => res.json()),
-      fetch(`/api/incidents?workspaceId=${workspaceId}`).then(res => res.json())
+      fetch(`/api/dashboard/metrics?workspaceId=${workspaceId}`).then((res) => safeJson(res)),
+      fetch(`/api/incidents?workspaceId=${workspaceId}`).then((res) => safeJson(res))
     ])
       .then(([metricsData, incidentsData]) => {
         if (metricsData.metrics) {

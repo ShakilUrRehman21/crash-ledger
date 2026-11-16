@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SignOutButton } from "@clerk/nextjs";
 import { Plus, ArrowRight, Building2, LogOut } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { safeJson } from "@/lib/safe-json";
 
 const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all";
 
@@ -31,7 +32,7 @@ export default function WorkspaceSelectorPage() {
 
     useEffect(() => {
         fetch("/api/workspace")
-            .then(res => res.json())
+            .then((res) => safeJson(res))
             .then(data => {
                 if (data.workspaces && data.workspaces.length > 0) {
                     setWorkspaces(data.workspaces);
@@ -66,7 +67,7 @@ export default function WorkspaceSelectorPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, slug })
             });
-            const data = await res.json();
+            const data = await safeJson(res);
 
             if (!res.ok) {
                 setError(errorMessage(data.error, "Failed to create workspace"));

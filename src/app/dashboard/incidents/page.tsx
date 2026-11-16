@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { TopBar } from "@/components/layout/TopBar";
 import { AlertTriangle, Filter, Search, ChevronRight, Clock, Plus, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { safeJson } from "@/lib/safe-json";
 
 const SEVERITIES = ["all", "critical", "high", "medium", "low"];
 const STATUSES = ["all", "open", "investigating", "resolved", "archived"];
@@ -57,7 +58,7 @@ export default function IncidentsPage() {
     if (status !== "all") params.append("status", status);
 
     fetch(`/api/incidents?${params.toString()}`)
-      .then((res) => res.json())
+      .then((res) => safeJson(res))
       .then((data) => {
         if (data.incidents) setAllIncidents(data.incidents);
       })

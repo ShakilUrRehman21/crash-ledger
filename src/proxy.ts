@@ -1,9 +1,19 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(["/dashboard(.*)", "/api(.*)", "/workspace-select(.*)"]);
+const isProtectedPage = createRouteMatcher(["/dashboard(.*)", "/workspace-select(.*)"]);
+const isApiRoute = createRouteMatcher(["/api(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) {
+    // API callers expect JSON, so answer with a JSON 401 instead of an HTML sign-in page.
+    if (isApiRoute(req)) {
+        const { userId } = await auth();
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized. Please sign in again." }, { status: 401 });
+        }
+        return;
+    }
+    if (isProtectedPage(req)) {
         await auth.protect();
     }
 });

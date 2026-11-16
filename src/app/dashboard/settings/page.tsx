@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TopBar } from "@/components/layout/TopBar";
 import { Trash2, Mail, UserCheck, Crown, Shield, Eye, Check, Lock } from "lucide-react";
+import { safeJson } from "@/lib/safe-json";
 
 const TABS = ["Members", "Workspace", "Billing", "Danger Zone"] as const;
 type Tab = typeof TABS[number];
@@ -69,7 +70,7 @@ export default function SettingsPage() {
     useEffect(() => {
         if (!workspaceId) return;
         fetch(`/api/workspace/members?workspaceId=${workspaceId}`)
-            .then((r) => r.json())
+            .then((r) => safeJson(r))
             .then((d) => {
                 if (d.members) setMembers(d.members);
                 setMembersLoading(false);
@@ -89,7 +90,7 @@ export default function SettingsPage() {
                 localStorage.removeItem("cl_workspace");
                 router.push("/workspace-select");
             } else {
-                const data = await res.json().catch(() => ({}));
+                const data = await safeJson(res).catch(() => ({}));
                 setDeleteError(typeof data.error === "string" ? data.error : "Failed to delete workspace");
             }
         } catch {

@@ -7,6 +7,7 @@ import {
     Plus, User, Send, ChevronDown
 } from "lucide-react";
 import Link from "next/link";
+import { safeJson } from "@/lib/safe-json";
 
 const EVENT_ICONS: Record<string, { icon: any; color: string; bg: string; label: string }> = {
     detected: { icon: AlertTriangle, color: "#EF4444", bg: "#FEF2F2", label: "Detected" },
@@ -73,7 +74,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
     useEffect(() => {
         if (!workspaceId) return;
         fetch(`/api/incidents/${id}?workspaceId=${workspaceId}`)
-            .then(res => res.json())
+            .then((res) => safeJson(res))
             .then(data => {
                 if (data.incident) setIncident(data.incident);
                 setLoading(false);
@@ -84,7 +85,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
             });
 
         fetch(`/api/workspace/members?workspaceId=${workspaceId}`)
-            .then(res => res.json())
+            .then((res) => safeJson(res))
             .then(data => {
                 if (data.members) setMembers(data.members);
             })
@@ -155,7 +156,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                 body: JSON.stringify({ eventType: "note", description: textToSave, workspaceId })
             });
             if (res.ok) {
-                const data = await res.json();
+                const data = await safeJson(res);
                 setIncident((prev: any) => ({ ...prev, timelineEvents: [...(prev.timelineEvents ?? []), data.event] }));
             }
         } catch (e) {
@@ -178,7 +179,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                 })
             });
             if (res.ok) {
-                const data = await res.json();
+                const data = await safeJson(res);
                 setIncident((prev: any) => ({ ...prev, actionItemsList: [...(prev.actionItemsList ?? []), data.actionItem] }));
                 setNewAction({ title: "", priority: "medium", assignedTo: "" });
                 setShowAddAction(false);
@@ -223,7 +224,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                     preventionSteps: rcaForm.prevention
                 })
             });
-            const data = await res.json();
+            const data = await safeJson(res);
             if (res.ok) {
                 setIncident((prev: any) => ({ ...prev, rca: data.rca }));
                 setRcaSubmitted(true);

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { TopBar } from "@/components/layout/TopBar";
 import { AlertTriangle, Clock, CheckCircle2, AlertCircle, ChevronRight, FolderOpen } from "lucide-react";
 import Link from "next/link";
+import { safeJson } from "@/lib/safe-json";
 
 const COLUMNS = [
     { key: "todo", label: "To Do", color: "#64748B", bg: "#F1F5F9" },
@@ -28,7 +29,7 @@ export default function ActionItemsPage() {
     useEffect(() => {
         if (!workspaceId) return;
         fetch(`/api/action-items?workspaceId=${workspaceId}`)
-            .then(res => res.json())
+            .then((res) => safeJson(res))
             .then(data => {
                 if (data.actionItems) setItems(data.actionItems);
             })

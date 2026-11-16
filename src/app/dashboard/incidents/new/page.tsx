@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { TopBar } from "@/components/layout/TopBar";
 import { Plus, ArrowLeft, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { safeJson } from "@/lib/safe-json";
 
 const COMPONENTS = [
   "Database",
@@ -68,7 +69,7 @@ export default function NewIncidentPage() {
         }),
       });
 
-      const data = await res.json();
+      const data = await safeJson(res);
       if (!res.ok) {
         let errMsg = "Failed to create incident";
         if (data.error) {

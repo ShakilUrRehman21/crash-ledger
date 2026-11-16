@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import { safeJson } from "@/lib/safe-json";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -44,7 +45,7 @@ export function Sidebar() {
     } catch { }
 
     fetch("/api/workspace")
-      .then(r => r.json())
+      .then((r) => safeJson(r))
       .then(d => {
         if (d.workspaces && d.workspaces.length > 0) {
           setWorkspaces(d.workspaces);
