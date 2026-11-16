@@ -37,10 +37,10 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
     archived: [],
 };
 
-const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all";
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all";
 const labelCls = "block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2";
-const cardCls = "bg-white rounded-2xl border border-[#EFE9E1] shadow-sm";
-const primaryBtn = "inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-md shadow-[#FA5A2A]/25 transition-all";
+const cardCls = "bg-white rounded-2xl border border-[#D9D3C7] shadow-sm";
+const primaryBtn = "inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-md shadow-[#FF4D1A]/25 transition-all";
 
 function fmt(dateStr: string | null) {
     if (!dateStr) return "—";
@@ -93,7 +93,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#FAF8F5]">
+            <div className="min-h-screen bg-[#F2EFE8]">
                 <TopBar title="Incident Detail" subtitle="Loading..." />
                 <div className="max-w-4xl mx-auto p-8 space-y-4 animate-pulse">
                     <div className="h-40 bg-neutral-200/60 rounded-2xl" />
@@ -105,11 +105,11 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
 
     if (!incident) {
         return (
-            <div className="min-h-screen bg-[#FAF8F5]">
+            <div className="min-h-screen bg-[#F2EFE8]">
                 <TopBar title="Incident Detail" />
                 <div className="p-12 text-center">
                     <p className="text-base text-neutral-500 mb-3">Incident not found.</p>
-                    <Link href="/dashboard/incidents" className="text-sm font-bold text-[#FA5A2A]">← Back to incidents</Link>
+                    <Link href="/dashboard/incidents" className="text-sm font-bold text-[#FF4D1A]">← Back to incidents</Link>
                 </div>
             </div>
         );
@@ -246,11 +246,11 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
     ];
 
     return (
-        <div className="min-h-screen bg-[#FAF8F5] pb-16">
+        <div className="min-h-screen bg-[#F2EFE8] pb-16">
             <TopBar title="Incident Detail" subtitle={`#${String(id).slice(0, 8)}`} />
             <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
 
-                <Link href="/dashboard/incidents" className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-[#FA5A2A] mb-5 transition-colors">
+                <Link href="/dashboard/incidents" className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-[#FF4D1A] mb-5 transition-colors">
                     <ArrowLeft className="w-3.5 h-3.5" /> Back to incidents
                 </Link>
 
@@ -263,7 +263,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: statStyle.bg, color: statStyle.text }}>{stat}</span>
                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-neutral-100 text-neutral-600 border border-neutral-200">{incident.environment}</span>
                             </div>
-                            <h1 className="text-xl sm:text-2xl font-extrabold text-[#111827] font-heading leading-snug mb-2">{incident.title}</h1>
+                            <h1 className="text-xl sm:text-2xl font-extrabold text-[#0D0D0D] font-heading leading-snug mb-2">{incident.title}</h1>
                             {incident.description && <p className="text-sm text-neutral-500 leading-relaxed">{incident.description}</p>}
                         </div>
 
@@ -274,12 +274,12 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                                         Update Status <ChevronDown className="w-3.5 h-3.5" />
                                     </button>
                                     {statusChanging && (
-                                        <div className="absolute right-0 top-full mt-2 bg-white border border-[#EFE9E1] rounded-2xl p-1.5 z-50 min-w-[190px] shadow-xl">
+                                        <div className="absolute right-0 top-full mt-2 bg-white border border-[#D9D3C7] rounded-2xl p-1.5 z-50 min-w-[190px] shadow-xl">
                                             {nextStatuses.map((ns) => (
                                                 <button
                                                     key={ns}
                                                     onClick={() => changeStatus(ns)}
-                                                    className="block w-full text-left px-3 py-2 rounded-xl text-xs font-bold capitalize hover:bg-[#FAF8F5] transition-colors"
+                                                    className="block w-full text-left px-3 py-2 rounded-xl text-xs font-bold capitalize hover:bg-[#F2EFE8] transition-colors"
                                                     style={{ color: STATUS_COLORS[ns].text }}
                                                 >
                                                     → Mark as {ns}
@@ -298,19 +298,19 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                         {metaItems.map(({ label, val, red }) => (
                             <div key={label} className="flex flex-col gap-1">
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{label}</span>
-                                <span className={`text-sm font-semibold ${red ? "text-red-500" : "text-[#111827]"}`}>{String(val)}</span>
+                                <span className={`text-sm font-semibold ${red ? "text-red-500" : "text-[#0D0D0D]"}`}>{String(val)}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="inline-flex flex-wrap gap-1 p-1 mb-5 bg-white border border-[#EFE9E1] rounded-full shadow-sm">
+                <div className="inline-flex flex-wrap gap-1 p-1 mb-5 bg-white border border-[#D9D3C7] rounded-full shadow-sm">
                     {(["timeline", "rca", "actions"] as const).map((t) => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
-                            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${tab === t ? "bg-[#FA5A2A] text-white shadow-md shadow-[#FA5A2A]/25" : "text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50"}`}
+                            className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all ${tab === t ? "bg-[#FF4D1A] text-white shadow-md shadow-[#FF4D1A]/25" : "text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50"}`}
                         >
                             {t === "timeline" && <Clock className="w-3.5 h-3.5" />}
                             {t === "rca" && <FileText className="w-3.5 h-3.5" />}
@@ -333,7 +333,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                                             <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: cfg.bg, border: `2px solid ${cfg.color}30` }}>
                                                 <Icon className="w-4 h-4" style={{ color: cfg.color }} />
                                             </div>
-                                            {i < localTimeline.length - 1 && <div className="w-0.5 flex-1 bg-[#EFE9E1] my-1 min-h-[20px]" />}
+                                            {i < localTimeline.length - 1 && <div className="w-0.5 flex-1 bg-[#D9D3C7] my-1 min-h-[20px]" />}
                                         </div>
                                         <div className={`${cardCls} flex-1 p-4 mb-3`}>
                                             <div className="flex justify-between mb-1">
@@ -399,7 +399,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                             <>
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center"><FileText className="w-5 h-5" /></div>
-                                    <h3 className="text-base font-bold text-[#111827] font-heading">
+                                    <h3 className="text-base font-bold text-[#0D0D0D] font-heading">
                                         {rcaSubmitted ? "RCA Submitted" : "Submit Root Cause Analysis"}
                                     </h3>
                                 </div>
@@ -431,7 +431,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                         ) : (
                             <div className="text-center py-10">
                                 <FileText className="w-10 h-10 text-neutral-300 mx-auto" />
-                                <p className="text-sm font-bold text-[#111827] mt-3">RCA locked until incident is resolved</p>
+                                <p className="text-sm font-bold text-[#0D0D0D] mt-3">RCA locked until incident is resolved</p>
                                 <p className="text-xs text-neutral-500 mt-1">Mark this incident as <strong>resolved</strong> to submit a Root Cause Analysis.</p>
                             </div>
                         )}
@@ -448,7 +448,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                         </div>
 
                         {showAddAction && (
-                            <div className="bg-[#FFF2EC] border border-[#FFD5C7] rounded-2xl p-4 mb-4">
+                            <div className="bg-[#FFE6DC] border border-[#FFD5C7] rounded-2xl p-4 mb-4">
                                 <p className="text-xs font-bold text-[#C0390B] mb-3">New Action Item</p>
                                 <div className="flex flex-wrap gap-2 items-center">
                                     <input value={newAction.title} onChange={(e) => setNewAction((p) => ({ ...p, title: e.target.value }))} placeholder="Task title..." className={`${inputCls} flex-1 min-w-[200px] !w-auto`} />
@@ -468,7 +468,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                         {localActions.length === 0 ? (
                             <div className={`${cardCls} text-center py-12 px-5`}>
                                 <CheckSquare className="w-9 h-9 text-neutral-300 mx-auto" />
-                                <p className="text-sm font-bold text-[#111827] mt-3">No action items yet</p>
+                                <p className="text-sm font-bold text-[#0D0D0D] mt-3">No action items yet</p>
                                 <p className="text-xs text-neutral-500 mt-1">Click &quot;Add Action Item&quot; to create remediation tasks.</p>
                             </div>
                         ) : (
@@ -481,7 +481,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                                         <div key={item.id} className={`${cardCls} p-4 hover:shadow-md transition-shadow`} style={{ borderLeft: `4px solid ${pc}` }}>
                                             <div className="flex justify-between items-center gap-3">
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-[#111827] mb-2">{item.title}</p>
+                                                    <p className="text-sm font-bold text-[#0D0D0D] mb-2">{item.title}</p>
                                                     <div className="flex flex-wrap gap-2 items-center">
                                                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: ac.bg, color: ac.text }}>{String(item.status).replace("_", " ")}</span>
                                                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider" style={{ background: pc + "15", color: pc, border: `1px solid ${pc}40` }}>{item.priority}</span>
@@ -496,7 +496,7 @@ export default function IncidentDetailPage({ params }: { params: Promise<{ id: s
                                                     <button
                                                         onClick={() => cycleActionStatus(item.id, item.status)}
                                                         title="Click to advance status"
-                                                        className="px-3 py-1.5 rounded-full text-[11px] font-bold border border-neutral-200 text-neutral-700 hover:bg-[#FFF2EC] hover:border-[#FA5A2A] hover:text-[#FA5A2A] transition-all whitespace-nowrap"
+                                                        className="px-3 py-1.5 rounded-full text-[11px] font-bold border border-neutral-200 text-neutral-700 hover:bg-[#FFE6DC] hover:border-[#FF4D1A] hover:text-[#FF4D1A] transition-all whitespace-nowrap"
                                                     >
                                                         {item.status === "done" ? "Reopen" : "Advance →"}
                                                     </button>

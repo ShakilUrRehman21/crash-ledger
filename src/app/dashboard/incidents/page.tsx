@@ -75,7 +75,7 @@ export default function IncidentsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-16">
+    <div className="min-h-screen bg-[#F2EFE8] pb-16">
       <TopBar
         title="Incidents"
         subtitle={`${filtered.length} total incidents in ledger`}
@@ -88,7 +88,7 @@ export default function IncidentsPage() {
         {/* Metric Summary Counters */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total", val: allIncidents.length, color: "#111827", bg: "#FFFFFF", border: "#EFE9E1" },
+            { label: "Total", val: allIncidents.length, color: "#0D0D0D", bg: "#FFFFFF", border: "#D9D3C7" },
             { label: "Open", val: allIncidents.filter((i) => i.status === "open").length, color: "#2563EB", bg: "#EFF6FF", border: "#BFDBFE" },
             { label: "Investigating", val: allIncidents.filter((i) => i.status === "investigating").length, color: "#EA580C", bg: "#FFF7ED", border: "#FED7AA" },
             { label: "Critical P1", val: allIncidents.filter((i) => i.severity === "critical").length, color: "#DC2626", bg: "#FEF2F2", border: "#FCA5A5" },
@@ -110,15 +110,15 @@ export default function IncidentsPage() {
         </div>
 
         {/* Filters Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-[#EFE9E1] shadow-sm">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF8F5] border border-neutral-200/80 flex-1 max-w-md focus-within:border-[#FA5A2A]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-[#D9D3C7] shadow-sm">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F2EFE8] border border-neutral-200/80 flex-1 max-w-md focus-within:border-[#FF4D1A]">
             <Search className="w-4 h-4 text-neutral-400 shrink-0" />
             <input
               type="text"
               placeholder="Search by title, component, or keyword..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent text-xs text-[#111827] placeholder-neutral-400 focus:outline-none"
+              className="w-full bg-transparent text-xs text-[#0D0D0D] placeholder-neutral-400 focus:outline-none"
             />
           </div>
 
@@ -131,7 +131,7 @@ export default function IncidentsPage() {
             <select
               value={severity}
               onChange={(e) => setSeverity(e.target.value)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#FAF8F5] border border-neutral-200 text-neutral-700 focus:outline-none focus:border-[#FA5A2A] cursor-pointer"
+              className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#F2EFE8] border border-neutral-200 text-neutral-700 focus:outline-none focus:border-[#FF4D1A] cursor-pointer"
             >
               {SEVERITIES.map((s) => (
                 <option key={s} value={s}>
@@ -143,7 +143,7 @@ export default function IncidentsPage() {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#FAF8F5] border border-neutral-200 text-neutral-700 focus:outline-none focus:border-[#FA5A2A] cursor-pointer"
+              className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#F2EFE8] border border-neutral-200 text-neutral-700 focus:outline-none focus:border-[#FF4D1A] cursor-pointer"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -155,11 +155,11 @@ export default function IncidentsPage() {
         </div>
 
         {/* Main Incidents Table */}
-        <div className="bg-white rounded-2xl border border-[#EFE9E1] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#D9D3C7] shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-neutral-100 bg-[#FAF8F5]/60 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
+                <tr className="border-b border-neutral-100 bg-[#F2EFE8]/60 text-[11px] font-bold text-neutral-400 uppercase tracking-wider">
                   <th className="py-3.5 pl-6">Incident</th>
                   <th className="py-3.5 px-3">Severity</th>
                   <th className="py-3.5 px-3">Status</th>
@@ -189,7 +189,7 @@ export default function IncidentsPage() {
                         <td className="py-4 pl-6 max-w-[280px]">
                           <Link
                             href={`/dashboard/incidents/${inc.id}`}
-                            className="font-bold text-[#111827] hover:text-[#FA5A2A] transition-colors truncate block"
+                            className="font-bold text-[#0D0D0D] hover:text-[#FF4D1A] transition-colors truncate block"
                           >
                             {inc.title}
                           </Link>
@@ -239,7 +239,7 @@ export default function IncidentsPage() {
                         <td className="py-4 pr-6 text-right">
                           <Link
                             href={`/dashboard/incidents/${inc.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-[#FA5A2A] hover:bg-[#FFF2EC] transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-[#FF4D1A] hover:bg-[#FFE6DC] transition-colors"
                           >
                             <span>Details</span>
                             <ChevronRight className="w-3.5 h-3.5" />

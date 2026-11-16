@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;500;700&display=swap");
 @import "tailwindcss";
 
 @layer base {
@@ -172,3 +173,24 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .animate-float {
   animation: floatSlow 4s ease-in-out infinite;
 }
+
+/* RETHEME 2026 */
+@theme { --radius-sm:2px; --radius-md:2px; --radius-lg:3px; --radius-xl:4px; --radius-2xl:4px; --radius-3xl:6px; }
+:root {
+  --cl-primary:#FF4D1A; --cl-primary-hover:#E63E0F; --cl-primary-light:#FFE6DC; --cl-primary-glow:rgba(255,77,26,.25);
+  --cl-background:#F2EFE8; --cl-background-subtle:#E9E4DA; --cl-card-bg:#FFFFFF; --cl-card-border:#0D0D0D; --cl-card-border-hover:#0D0D0D;
+  --cl-foreground:#0D0D0D; --cl-foreground-muted:#57534C; --cl-foreground-subtle:#8A847A;
+  --cl-dark-sidebar:#0D0D0D; --cl-dark-surface:#1A1A1A; --cl-dark-surface-elevated:#262626;
+  --cl-radius-sm:2px; --cl-radius-md:2px; --cl-radius-lg:3px; --cl-radius-xl:4px;
+}
+body { background:#F2EFE8; color:#0D0D0D; font-family:'JetBrains Mono',ui-monospace,monospace; }
+h1,h2,.font-display { font-family:'Archivo Black',Impact,sans-serif !important; font-weight:400 !important; letter-spacing:-.02em; }
+.cl-card { border:2px solid #0D0D0D !important; border-radius:2px !important; box-shadow:5px 5px 0 #0D0D0D !important; transition:transform .15s, box-shadow .15s; }
+.cl-card:hover { transform:translate(-2px,-2px); box-shadow:7px 7px 0 #FF4D1A !important; }
+.btn-primary { background:#FF4D1A !important; color:#0D0D0D !important; border:2px solid #0D0D0D !important; border-radius:2px !important; box-shadow:4px 4px 0 #0D0D0D !important; font-weight:700; }
+.btn-primary:hover { transform:translate(2px,2px); box-shadow:2px 2px 0 #0D0D0D !important; }
+.btn-secondary { background:#fff !important; color:#0D0D0D !important; border:2px solid #0D0D0D !important; border-radius:2px !important; }
+.badge-pill { border-radius:2px !important; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; }
+input,textarea,select { border-radius:2px !important; }
+input:focus,textarea:focus,select:focus { outline:2px solid #FF4D1A; outline-offset:1px; }
+::selection { background:#FF4D1A; color:#0D0D0D; }

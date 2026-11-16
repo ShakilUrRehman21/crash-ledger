@@ -8,9 +8,9 @@ import {
 } from "recharts";
 import { BarChart2 } from "lucide-react";
 
-const card = "bg-white rounded-2xl border border-[#EFE9E1] shadow-sm p-6";
+const card = "bg-white rounded-2xl border border-[#D9D3C7] shadow-sm p-6";
 const axisTick = { fontSize: 11, fill: "#9CA3AF" };
-const tooltipStyle = { borderRadius: 12, border: "1px solid #EFE9E1", fontSize: 12, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" };
+const tooltipStyle = { borderRadius: 12, border: "1px solid #D9D3C7", fontSize: 12, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" };
 
 function RiskBar({ value }: { value: number }) {
     const color = value >= 70 ? "#EF4444" : value >= 40 ? "#F59E0B" : "#10B981";
@@ -27,7 +27,7 @@ function RiskBar({ value }: { value: number }) {
 function ChartHeader({ title, unit, desc }: { title: string; unit?: string; desc: string }) {
     return (
         <div className="mb-4">
-            <h3 className="text-base font-bold text-[#111827] font-heading">
+            <h3 className="text-base font-bold text-[#0D0D0D] font-heading">
                 {title} {unit && <span className="text-xs font-medium text-neutral-400">({unit})</span>}
             </h3>
             <p className="text-xs text-neutral-400">{desc}</p>
@@ -59,7 +59,7 @@ export default function AnalyticsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#FAF8F5]">
+            <div className="min-h-screen bg-[#F2EFE8]">
                 <TopBar title="Analytics" subtitle="Loading analytics..." />
                 <div className="p-8 max-w-7xl mx-auto grid gap-4 animate-pulse">
                     <div className="h-64 bg-neutral-200/60 rounded-2xl" />
@@ -71,13 +71,13 @@ export default function AnalyticsPage() {
 
     if (!workspaceId || incidents.length === 0) {
         return (
-            <div className="min-h-screen bg-[#FAF8F5]">
+            <div className="min-h-screen bg-[#F2EFE8]">
                 <TopBar title="Analytics" subtitle="Historical trends and recurring failure analysis" />
-                <div className="max-w-xl mx-auto mt-16 bg-white rounded-3xl border border-[#EFE9E1] shadow-sm p-12 text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center mx-auto mb-4">
+                <div className="max-w-xl mx-auto mt-16 bg-white rounded-3xl border border-[#D9D3C7] shadow-sm p-12 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-[#FFE6DC] text-[#FF4D1A] flex items-center justify-center mx-auto mb-4">
                         <BarChart2 className="w-7 h-7" />
                     </div>
-                    <h2 className="text-lg font-bold text-[#111827] font-heading mb-2">No data available yet</h2>
+                    <h2 className="text-lg font-bold text-[#0D0D0D] font-heading mb-2">No data available yet</h2>
                     <p className="text-sm text-neutral-500">
                         {workspaceId ? "Analytics will populate once you start logging incidents for this workspace." : "Please select a workspace first."}
                     </p>
@@ -143,7 +143,7 @@ export default function AnalyticsPage() {
     });
 
     return (
-        <div className="min-h-screen bg-[#FAF8F5] pb-16">
+        <div className="min-h-screen bg-[#F2EFE8] pb-16">
             <TopBar title="Analytics" subtitle="Historical trends and recurring failure analysis" />
             <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
 
@@ -154,15 +154,15 @@ export default function AnalyticsPage() {
                             <AreaChart data={trendData} margin={{ left: -20, right: 8 }}>
                                 <defs>
                                     <linearGradient id="mttrGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#FA5A2A" stopOpacity={0.25} />
-                                        <stop offset="95%" stopColor="#FA5A2A" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#FF4D1A" stopOpacity={0.25} />
+                                        <stop offset="95%" stopColor="#FF4D1A" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                                 <XAxis dataKey="week" tick={axisTick} axisLine={false} tickLine={false} />
                                 <YAxis tick={axisTick} axisLine={false} tickLine={false} />
                                 <Tooltip contentStyle={tooltipStyle} formatter={(v) => [`${v} min`, "MTTR"]} />
-                                <Area type="monotone" dataKey="mttr" stroke="#FA5A2A" strokeWidth={3} fill="url(#mttrGrad)" dot={{ r: 4, fill: "#fff", stroke: "#FA5A2A", strokeWidth: 2 }} />
+                                <Area type="monotone" dataKey="mttr" stroke="#FF4D1A" strokeWidth={3} fill="url(#mttrGrad)" dot={{ r: 4, fill: "#fff", stroke: "#FF4D1A", strokeWidth: 2 }} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
@@ -210,7 +210,7 @@ export default function AnalyticsPage() {
                             <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(250,90,42,0.05)" }} />
                             <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
                             <Bar dataKey="critical" name="Critical" stackId="a" fill="#EF4444" />
-                            <Bar dataKey="high" name="High" stackId="a" fill="#FA5A2A" />
+                            <Bar dataKey="high" name="High" stackId="a" fill="#FF4D1A" />
                             <Bar dataKey="medium" name="Medium" stackId="a" fill="#F59E0B" />
                             <Bar dataKey="low" name="Low" stackId="a" fill="#CBD5E1" radius={[6, 6, 0, 0]} />
                         </BarChart>
@@ -222,7 +222,7 @@ export default function AnalyticsPage() {
                     <div className="flex flex-col gap-4">
                         {recurringPatterns.map((p) => (
                             <div key={p.component} className="grid grid-cols-2 sm:grid-cols-[160px_90px_1fr_90px] items-center gap-3 sm:gap-4">
-                                <span className="text-sm font-bold text-[#111827] truncate">{p.component}</span>
+                                <span className="text-sm font-bold text-[#0D0D0D] truncate">{p.component}</span>
                                 <span className="text-xs text-neutral-500">{p.occurrences} incident{p.occurrences === 1 ? "" : "s"}</span>
                                 <div className="col-span-2 sm:col-span-1 order-last sm:order-none"><RiskBar value={p.riskScore} /></div>
                                 <span className="text-[11px] text-neutral-400 text-right">last: {p.lastOccurrence}</span>

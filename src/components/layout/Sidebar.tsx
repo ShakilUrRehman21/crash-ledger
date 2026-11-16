@@ -70,7 +70,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-[#111826] text-white flex flex-col fixed left-0 top-0 bottom-0 z-40 border-r border-white/10 selection:bg-[#FA5A2A]/30">
+    <aside className="w-64 min-h-screen bg-[#111826] text-white flex flex-col fixed left-0 top-0 bottom-0 z-40 border-r border-white/10 selection:bg-[#FF4D1A]/30">
       
       {/* Brand & Workspace Switcher */}
       <div className="p-4 border-b border-white/10 relative">
@@ -101,7 +101,7 @@ export function Sidebar() {
                   key={ws.id}
                   onClick={() => handleSwitch(ws)}
                   className={`w-full flex items-center justify-between p-2 rounded-xl text-left text-xs transition-colors ${
-                    ws.id === currentWs.id ? 'bg-[#FA5A2A] text-white font-bold' : 'text-neutral-300 hover:bg-white/10'
+                    ws.id === currentWs.id ? 'bg-[#FF4D1A] text-white font-bold' : 'text-neutral-300 hover:bg-white/10'
                   }`}
                 >
                   <div className="flex items-center gap-2 truncate">
@@ -115,7 +115,7 @@ export function Sidebar() {
             <div className="h-px bg-white/10 my-1" />
             <Link
               href="/workspace-select"
-              className="flex items-center justify-between p-2 text-xs font-semibold text-[#FA5A2A] hover:bg-[#FA5A2A]/10 rounded-xl transition-colors"
+              className="flex items-center justify-between p-2 text-xs font-semibold text-[#FF4D1A] hover:bg-[#FF4D1A]/10 rounded-xl transition-colors"
             >
               <span>Manage all workspaces</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -139,7 +139,7 @@ export function Sidebar() {
               href={href}
               className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 isActive
-                  ? "bg-[#FA5A2A] text-white shadow-lg shadow-[#FA5A2A]/30 translate-x-0.5"
+                  ? "bg-[#FF4D1A] text-white shadow-lg shadow-[#FF4D1A]/30 translate-x-0.5"
                   : "text-neutral-400 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -168,7 +168,7 @@ export function Sidebar() {
         </p>
         <Link
           href="/dashboard/settings"
-          className="block w-full py-2 rounded-xl text-center text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-md shadow-[#FA5A2A]/20 transition-opacity"
+          className="block w-full py-2 rounded-xl text-center text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-md shadow-[#FF4D1A]/20 transition-opacity"
         >
           Upgrade to Pro
         </Link>
@@ -177,7 +177,7 @@ export function Sidebar() {
       {/* User / Logout Rail (Image 2 Elegent style) */}
       <div className="p-3 border-t border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-[#FA5A2A]/20 text-[#FA5A2A] border border-[#FA5A2A]/40 flex items-center justify-center font-bold text-xs shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#FF4D1A]/20 text-[#FF4D1A] border border-[#FF4D1A]/40 flex items-center justify-center font-bold text-xs shrink-0">
             {user?.firstName ? user.firstName.charAt(0) : "CL"}
           </div>
           <div className="min-w-0">

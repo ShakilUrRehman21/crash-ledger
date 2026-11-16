@@ -45,8 +45,8 @@ interface LogoProps {
 }
 
 export function Logo({ variant = "dark", size = 36, href = "/", className = "", tone }: LogoProps) {
-    const primary = variant === "light" ? "text-white" : "text-[#111827]";
-    const secondary = variant === "light" ? "text-white/70" : "text-[#FA5A2A]";
+    const primary = variant === "light" ? "text-white" : "text-[#0D0D0D]";
+    const secondary = variant === "light" ? "text-white/70" : "text-[#FF4D1A]";
 
     const content = (
         <span className={`inline-flex items-center gap-2.5 ${className}`}>

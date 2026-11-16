@@ -74,7 +74,7 @@ function StatCard({
   iconBg: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-[#EFE9E1] shadow-sm hover:shadow-md hover:border-[#FA5A2A]/30 transition-all flex flex-col justify-between">
+    <div className="bg-white rounded-2xl p-5 border border-[#D9D3C7] shadow-sm hover:shadow-md hover:border-[#FF4D1A]/30 transition-all flex flex-col justify-between">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-bold uppercase tracking-wider text-neutral-400">
           {label}
@@ -88,7 +88,7 @@ function StatCard({
       </div>
 
       <div>
-        <div className="text-2xl sm:text-3xl font-extrabold text-[#111827] font-heading tracking-tight mb-1">
+        <div className="text-2xl sm:text-3xl font-extrabold text-[#0D0D0D] font-heading tracking-tight mb-1">
           {value}
         </div>
         <div className="flex items-center gap-1.5 text-xs">
@@ -138,7 +138,7 @@ function RiskGauge({ value }: { value: number }) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-extrabold text-[#111827] font-heading" style={{ color }}>
+          <span className="text-3xl font-extrabold text-[#0D0D0D] font-heading" style={{ color }}>
             {value}
           </span>
           <span className="text-[10px] uppercase font-bold text-neutral-400">out of 100</span>
@@ -157,7 +157,7 @@ function RiskGauge({ value }: { value: number }) {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#111827] text-white px-3.5 py-2 rounded-xl shadow-xl text-xs font-medium border border-white/10">
+      <div className="bg-[#0D0D0D] text-white px-3.5 py-2 rounded-xl shadow-xl text-xs font-medium border border-white/10">
         <p className="text-neutral-400 text-[10px] mb-1 font-bold uppercase">{label}</p>
         {payload.map((entry: any, i: number) => (
           <div key={i} className="flex items-center gap-2">
@@ -231,17 +231,17 @@ export default function DashboardPage() {
 
   if (!workspaceId && !loading) {
     return (
-      <div className="p-12 text-center max-w-md mx-auto mt-20 bg-white rounded-3xl border border-[#EFE9E1] shadow-sm">
-        <div className="w-12 h-12 rounded-2xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center mx-auto mb-4">
+      <div className="p-12 text-center max-w-md mx-auto mt-20 bg-white rounded-3xl border border-[#D9D3C7] shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-[#FFE6DC] text-[#FF4D1A] flex items-center justify-center mx-auto mb-4">
           <Server className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-[#111827] mb-2 font-heading">No Workspace Selected</h2>
+        <h2 className="text-xl font-bold text-[#0D0D0D] mb-2 font-heading">No Workspace Selected</h2>
         <p className="text-xs text-neutral-500 mb-6 leading-relaxed">
           Please select or create an engineering team workspace to view your reliability telemetry.
         </p>
         <Link
           href="/workspace-select"
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-[#FA5A2A] hover:bg-[#E85022] shadow-md transition-all"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-[#FF4D1A] hover:bg-[#E85022] shadow-md transition-all"
         >
           Select Workspace
         </Link>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
 
   const severityData = [
     { name: "Critical", value: severityDist?.critical || 0, color: "#EF4444" },
-    { name: "High", value: severityDist?.high || 0, color: "#FA5A2A" },
+    { name: "High", value: severityDist?.high || 0, color: "#FF4D1A" },
     { name: "Medium", value: severityDist?.medium || 0, color: "#F59E0B" },
     { name: "Low", value: severityDist?.low || 0, color: "#94A3B8" },
   ].filter(d => d.value > 0);
@@ -310,7 +310,7 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-16">
+    <div className="min-h-screen bg-[#F2EFE8] pb-16">
       
       {/* Header */}
       <TopBar
@@ -352,8 +352,8 @@ export default function DashboardPage() {
             value={metrics.criticalIncidents}
             sub={`${metrics.totalIncidents > 0 ? (metrics.criticalIncidentRatio * 100).toFixed(1) : "0"}% of total`}
             icon={Zap}
-            iconColor="#FA5A2A"
-            iconBg="#FFF2EC"
+            iconColor="#FF4D1A"
+            iconBg="#FFE6DC"
           />
 
           {/* Card 4: MTTR (Mint Green) */}
@@ -389,11 +389,11 @@ export default function DashboardPage() {
         </div>
 
         {allIncidents.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-[#EFE9E1] shadow-sm max-w-xl mx-auto my-12">
-            <div className="w-16 h-16 rounded-2xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white rounded-3xl p-12 text-center border border-[#D9D3C7] shadow-sm max-w-xl mx-auto my-12">
+            <div className="w-16 h-16 rounded-2xl bg-[#FFE6DC] text-[#FF4D1A] flex items-center justify-center mx-auto mb-4">
               <ShieldCheck className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-[#111827] mb-2 font-heading">
+            <h3 className="text-xl font-bold text-[#0D0D0D] mb-2 font-heading">
               No Incidents Logged Yet
             </h3>
             <p className="text-sm text-neutral-500 mb-6 leading-relaxed">
@@ -401,7 +401,7 @@ export default function DashboardPage() {
             </p>
             <Link
               href={`/dashboard/incidents/new?workspaceId=${workspaceId}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-lg shadow-[#FA5A2A]/25 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-lg shadow-[#FF4D1A]/25 transition-all"
             >
               Log Your First Incident
             </Link>
@@ -412,10 +412,10 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Main Line Chart (8 cols): Wavy curves in Orange & Mint Green */}
-              <div className="lg:col-span-8 bg-white rounded-2xl p-6 border border-[#EFE9E1] shadow-sm">
+              <div className="lg:col-span-8 bg-white rounded-2xl p-6 border border-[#D9D3C7] shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-neutral-100 gap-2">
                   <div>
-                    <h3 className="text-base font-bold text-[#111827] font-heading">
+                    <h3 className="text-base font-bold text-[#0D0D0D] font-heading">
                       Incident Velocity & Resolution
                     </h3>
                     <p className="text-xs text-neutral-400">
@@ -424,7 +424,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-4 text-xs font-semibold">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-3 h-3 rounded-full bg-[#FA5A2A]" />
+                      <span className="w-3 h-3 rounded-full bg-[#FF4D1A]" />
                       <span className="text-neutral-600">Detected</span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -456,10 +456,10 @@ export default function DashboardPage() {
                         type="monotone"
                         dataKey="incidents"
                         name="Reported Failures"
-                        stroke="#FA5A2A"
+                        stroke="#FF4D1A"
                         strokeWidth={3}
-                        dot={{ r: 4, fill: "#FFFFFF", stroke: "#FA5A2A", strokeWidth: 2 }}
-                        activeDot={{ r: 6, fill: "#FA5A2A", stroke: "#FFFFFF", strokeWidth: 2 }}
+                        dot={{ r: 4, fill: "#FFFFFF", stroke: "#FF4D1A", strokeWidth: 2 }}
+                        activeDot={{ r: 6, fill: "#FF4D1A", stroke: "#FFFFFF", strokeWidth: 2 }}
                       />
                       {/* Mint Green Line: Resolved */}
                       <Line
@@ -480,9 +480,9 @@ export default function DashboardPage() {
               <div className="lg:col-span-4 space-y-6">
                 
                 {/* Risk Gauge Card */}
-                <div className="bg-white rounded-2xl p-6 border border-[#EFE9E1] shadow-sm flex flex-col items-center justify-center">
+                <div className="bg-white rounded-2xl p-6 border border-[#D9D3C7] shadow-sm flex flex-col items-center justify-center">
                   <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-neutral-100">
-                    <span className="text-xs font-bold text-[#111827] uppercase tracking-wider font-heading">
+                    <span className="text-xs font-bold text-[#0D0D0D] uppercase tracking-wider font-heading">
                       Reliability Health
                     </span>
                     <span className="text-[10px] font-bold text-neutral-400">Live Index</span>
@@ -491,9 +491,9 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Severity Donut Card (Image 2 style) */}
-                <div className="bg-white rounded-2xl p-5 border border-[#EFE9E1] shadow-sm">
+                <div className="bg-white rounded-2xl p-5 border border-[#D9D3C7] shadow-sm">
                   <div className="flex items-center justify-between pb-3 mb-2 border-b border-neutral-100">
-                    <span className="text-xs font-bold text-[#111827] uppercase tracking-wider font-heading">
+                    <span className="text-xs font-bold text-[#0D0D0D] uppercase tracking-wider font-heading">
                       Severity Distribution
                     </span>
                     <span className="text-[10px] font-bold text-neutral-400">Total: {allIncidents.length}</span>
@@ -537,10 +537,10 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Table (8 cols): Top Impacted & Recent Outages */}
-              <div className="lg:col-span-8 bg-white rounded-2xl p-6 border border-[#EFE9E1] shadow-sm">
+              <div className="lg:col-span-8 bg-white rounded-2xl p-6 border border-[#D9D3C7] shadow-sm">
                 <div className="flex items-center justify-between pb-4 mb-4 border-b border-neutral-100">
                   <div>
-                    <h3 className="text-base font-bold text-[#111827] font-heading">
+                    <h3 className="text-base font-bold text-[#0D0D0D] font-heading">
                       Recent Incidents Ledger
                     </h3>
                     <p className="text-xs text-neutral-400">
@@ -549,7 +549,7 @@ export default function DashboardPage() {
                   </div>
                   <Link
                     href="/dashboard/incidents"
-                    className="text-xs font-bold text-[#FA5A2A] hover:text-[#E85022] flex items-center gap-1 transition-colors"
+                    className="text-xs font-bold text-[#FF4D1A] hover:text-[#E85022] flex items-center gap-1 transition-colors"
                   >
                     <span>View all incidents</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -578,7 +578,7 @@ export default function DashboardPage() {
                             <td className="py-3.5 pl-2 max-w-[200px] truncate">
                               <Link
                                 href={`/dashboard/incidents/${inc.id}`}
-                                className="font-bold text-[#111827] hover:text-[#FA5A2A] transition-colors truncate block"
+                                className="font-bold text-[#0D0D0D] hover:text-[#FF4D1A] transition-colors truncate block"
                               >
                                 {inc.title}
                               </Link>
@@ -659,7 +659,7 @@ export default function DashboardPage() {
                           onClick={() => setCurrentPage(pageNum)}
                           className={`w-7 h-7 rounded-full text-xs font-bold transition-all ${
                             isActive
-                              ? "bg-[#FA5A2A] text-white shadow-sm"
+                              ? "bg-[#FF4D1A] text-white shadow-sm"
                               : "text-neutral-600 hover:bg-neutral-100"
                           }`}
                         >
@@ -684,9 +684,9 @@ export default function DashboardPage() {
               <div className="lg:col-span-4 space-y-6">
                 
                 {/* Downtime By Component */}
-                <div className="bg-white rounded-2xl p-5 border border-[#EFE9E1] shadow-sm">
+                <div className="bg-white rounded-2xl p-5 border border-[#D9D3C7] shadow-sm">
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-100">
-                    <span className="text-xs font-bold text-[#111827] uppercase tracking-wider font-heading">
+                    <span className="text-xs font-bold text-[#0D0D0D] uppercase tracking-wider font-heading">
                       Downtime by Component
                     </span>
                     <span className="text-[10px] font-bold text-neutral-400">Minutes</span>
@@ -700,11 +700,11 @@ export default function DashboardPage() {
                         <div key={d.component} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="font-semibold text-neutral-700">{d.component}</span>
-                            <span className="font-bold text-[#FA5A2A]">{d.minutes}m</span>
+                            <span className="font-bold text-[#FF4D1A]">{d.minutes}m</span>
                           </div>
                           <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
                             <div
-                              className="bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] h-2 rounded-full"
+                              className="bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] h-2 rounded-full"
                               style={{ width: `${Math.min(100, (d.minutes / (downtimeData[0]?.minutes || 1)) * 100)}%` }}
                             />
                           </div>
@@ -715,9 +715,9 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Status Breakdown */}
-                <div className="bg-white rounded-2xl p-5 border border-[#EFE9E1] shadow-sm">
+                <div className="bg-white rounded-2xl p-5 border border-[#D9D3C7] shadow-sm">
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-100">
-                    <span className="text-xs font-bold text-[#111827] uppercase tracking-wider font-heading">
+                    <span className="text-xs font-bold text-[#0D0D0D] uppercase tracking-wider font-heading">
                       Status Breakdown
                     </span>
                   </div>

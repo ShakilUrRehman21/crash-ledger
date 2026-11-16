@@ -15,10 +15,10 @@ const ROLE_ICONS: Record<string, { icon: any; color: string; bg: string }> = {
     viewer: { icon: Eye, color: "#64748B", bg: "#F1F5F9" },
 };
 
-const AVATAR_COLORS = ["#FA5A2A", "#10B981", "#0EA5E9", "#8B5CF6", "#F59E0B"];
+const AVATAR_COLORS = ["#FF4D1A", "#10B981", "#0EA5E9", "#8B5CF6", "#F59E0B"];
 
-const card = "bg-white rounded-2xl border border-[#EFE9E1] shadow-sm";
-const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all disabled:opacity-60 disabled:cursor-not-allowed";
+const card = "bg-white rounded-2xl border border-[#D9D3C7] shadow-sm";
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all disabled:opacity-60 disabled:cursor-not-allowed";
 const labelCls = "block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-2";
 
 function RoleBadge({ role }: { role: string }) {
@@ -100,17 +100,17 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAF8F5] pb-16">
+        <div className="min-h-screen bg-[#F2EFE8] pb-16">
             <TopBar title="Settings" subtitle="Manage your workspace" />
             <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6">
 
-                <div className="flex flex-wrap gap-1 p-1 mb-6 bg-white border border-[#EFE9E1] rounded-full shadow-sm w-fit">
+                <div className="flex flex-wrap gap-1 p-1 mb-6 bg-white border border-[#D9D3C7] rounded-full shadow-sm w-fit">
                     {TABS.map((t) => (
                         <button
                             key={t}
                             onClick={() => setTab(t)}
                             className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${tab === t
-                                ? t === "Danger Zone" ? "bg-red-500 text-white shadow-md shadow-red-500/25" : "bg-[#FA5A2A] text-white shadow-md shadow-[#FA5A2A]/25"
+                                ? t === "Danger Zone" ? "bg-red-500 text-white shadow-md shadow-red-500/25" : "bg-[#FF4D1A] text-white shadow-md shadow-[#FF4D1A]/25"
                                 : "text-neutral-500 hover:text-neutral-800 hover:bg-neutral-50"}`}
                         >
                             {t}
@@ -121,10 +121,10 @@ export default function SettingsPage() {
                 {tab === "Members" && (
                     <div className="space-y-5">
                         <div className={`${card} p-6`}>
-                            <h3 className="text-base font-bold text-[#111827] font-heading mb-1">Invite Team Member</h3>
+                            <h3 className="text-base font-bold text-[#0D0D0D] font-heading mb-1">Invite Team Member</h3>
                             <p className="text-xs text-neutral-500 mb-4">Email invitations aren&apos;t available yet. Members appear here once they join this workspace.</p>
                             <div className="flex gap-3 flex-wrap opacity-60">
-                                <div className="flex-1 min-w-[200px] flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5]">
+                                <div className="flex-1 min-w-[200px] flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8]">
                                     <Mail className="w-4 h-4 text-neutral-400" />
                                     <input disabled type="email" placeholder="colleague@company.com" className="bg-transparent outline-none text-sm w-full cursor-not-allowed" />
                                 </div>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
                         </div>
 
                         <div className={`${card} overflow-hidden`}>
-                            <div className="px-6 py-4 border-b border-neutral-100 bg-[#FAF8F5]/60">
+                            <div className="px-6 py-4 border-b border-neutral-100 bg-[#F2EFE8]/60">
                                 <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500">Team Members ({members.length})</h3>
                             </div>
                             {membersLoading ? (
@@ -147,7 +147,7 @@ export default function SettingsPage() {
                                     <div key={m.id} className={`flex items-center gap-4 px-6 py-4 hover:bg-neutral-50/70 transition-colors ${i < members.length - 1 ? "border-b border-neutral-100" : ""}`}>
                                         <Avatar name={m.fullName || m.email} index={i} />
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-[#111827] truncate">{m.fullName || m.email}</p>
+                                            <p className="text-sm font-bold text-[#0D0D0D] truncate">{m.fullName || m.email}</p>
                                             <p className="text-xs text-neutral-500 truncate">
                                                 {m.email}
                                                 {m.joinedAt && <span className="text-neutral-400"> · joined {new Date(m.joinedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>}
@@ -163,7 +163,7 @@ export default function SettingsPage() {
 
                 {tab === "Workspace" && (
                     <div className={`${card} p-6 sm:p-8`}>
-                        <h3 className="text-base font-bold text-[#111827] font-heading mb-1">Workspace Details</h3>
+                        <h3 className="text-base font-bold text-[#0D0D0D] font-heading mb-1">Workspace Details</h3>
                         <p className="text-xs text-neutral-500 mb-6">Renaming a workspace isn&apos;t supported yet.</p>
                         <div className="space-y-5 max-w-md">
                             <div>
@@ -187,7 +187,7 @@ export default function SettingsPage() {
                             <div className="flex justify-between items-center">
                                 <div>
                                     <p className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-400 mb-1">Current Plan</p>
-                                    <p className="text-3xl font-extrabold text-[#111827] font-heading">Free Plan</p>
+                                    <p className="text-3xl font-extrabold text-[#0D0D0D] font-heading">Free Plan</p>
                                 </div>
                                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Active</span>
                             </div>
@@ -197,12 +197,12 @@ export default function SettingsPage() {
                         <div className="bg-[#121826] text-white rounded-2xl p-6 sm:p-8 shadow-xl">
                             <div className="flex justify-between items-start flex-wrap gap-5">
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-wider text-[#FA5A2A] mb-1">Pro</p>
+                                    <p className="text-xs font-bold uppercase tracking-wider text-[#FF4D1A] mb-1">Pro</p>
                                     <p className="text-4xl font-extrabold font-heading">$49 <span className="text-base font-medium text-neutral-400">/month</span></p>
                                     <ul className="mt-4 space-y-2.5">
                                         {["Unlimited incidents", "Advanced MTBF & MTTR analytics", "Recurring failure detection", "Priority support", "Export RCA documents"].map((f) => (
                                             <li key={f} className="flex items-center gap-2.5 text-sm text-neutral-200">
-                                                <span className="w-5 h-5 rounded-full bg-[#FA5A2A]/20 flex items-center justify-center"><Check className="w-3 h-3 text-[#FA5A2A]" strokeWidth={3} /></span>
+                                                <span className="w-5 h-5 rounded-full bg-[#FF4D1A]/20 flex items-center justify-center"><Check className="w-3 h-3 text-[#FF4D1A]" strokeWidth={3} /></span>
                                                 {f}
                                             </li>
                                         ))}
@@ -222,7 +222,7 @@ export default function SettingsPage() {
                         <p className="text-xs text-neutral-500 mb-6">These actions are irreversible. Proceed with caution.</p>
                         <div className="flex justify-between items-center gap-5 flex-wrap p-5 rounded-2xl bg-red-50/60 border border-red-100">
                             <div className="flex-1 min-w-[220px]">
-                                <p className="text-sm font-bold text-[#111827]">Delete Workspace</p>
+                                <p className="text-sm font-bold text-[#0D0D0D]">Delete Workspace</p>
                                 <p className="text-xs text-neutral-500 mt-1 leading-relaxed">Permanently delete this workspace and all its incidents, members, and analytics.</p>
                             </div>
                             <button

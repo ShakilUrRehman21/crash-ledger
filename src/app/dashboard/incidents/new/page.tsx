@@ -92,27 +92,27 @@ export default function NewIncidentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] pb-16">
+    <div className="min-h-screen bg-[#F2EFE8] pb-16">
       <TopBar title="New Incident" subtitle="Log and triage a system outage" showCreateIncident={false} />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6">
         <Link
           href="/dashboard/incidents"
-          className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-[#FA5A2A] mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-[#FF4D1A] mb-6 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to incidents</span>
         </Link>
 
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#EFE9E1] shadow-sm">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-[#D9D3C7] shadow-sm">
           
           {/* Card Header */}
           <div className="flex items-center gap-3.5 pb-6 mb-6 border-b border-neutral-100">
-            <div className="w-11 h-11 rounded-2xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center shrink-0 shadow-sm">
+            <div className="w-11 h-11 rounded-2xl bg-[#FFE6DC] text-[#FF4D1A] flex items-center justify-center shrink-0 shadow-sm">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#111827] font-heading">
+              <h2 className="text-xl font-bold text-[#0D0D0D] font-heading">
                 Log New Incident
               </h2>
               <p className="text-xs text-neutral-500 mt-0.5">
@@ -134,7 +134,7 @@ export default function NewIncidentPage() {
                 value={form.title}
                 onChange={(e) => handleChange("title", e.target.value)}
                 placeholder="e.g., Primary database connection pool exhaustion on checkout"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all"
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all"
               />
             </div>
 
@@ -152,15 +152,15 @@ export default function NewIncidentPage() {
                       onClick={() => handleChange("severity", value)}
                       className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
                         isSelected
-                          ? "border-[#FA5A2A] bg-[#FFF2EC]/70 shadow-sm"
+                          ? "border-[#FF4D1A] bg-[#FFE6DC]/70 shadow-sm"
                           : "border-neutral-200 bg-white hover:border-neutral-300"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className={`text-xs font-bold ${isSelected ? "text-[#FA5A2A]" : "text-neutral-800"}`}>
+                        <span className={`text-xs font-bold ${isSelected ? "text-[#FF4D1A]" : "text-neutral-800"}`}>
                           {label}
                         </span>
-                        {isSelected && <span className="w-2 h-2 rounded-full bg-[#FA5A2A]" />}
+                        {isSelected && <span className="w-2 h-2 rounded-full bg-[#FF4D1A]" />}
                       </div>
                       <p className="text-[11px] text-neutral-500 leading-tight">{desc}</p>
                     </div>
@@ -178,7 +178,7 @@ export default function NewIncidentPage() {
                 <select
                   value={form.environment}
                   onChange={(e) => handleChange("environment", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] focus:outline-none focus:border-[#FA5A2A] cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] focus:outline-none focus:border-[#FF4D1A] cursor-pointer"
                 >
                   <option value="production">Production</option>
                   <option value="staging">Staging</option>
@@ -193,7 +193,7 @@ export default function NewIncidentPage() {
                 <select
                   value={form.systemComponent}
                   onChange={(e) => handleChange("systemComponent", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] focus:outline-none focus:border-[#FA5A2A] cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] focus:outline-none focus:border-[#FF4D1A] cursor-pointer"
                 >
                   {COMPONENTS.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -213,7 +213,7 @@ export default function NewIncidentPage() {
                 value={form.description}
                 onChange={(e) => handleChange("description", e.target.value)}
                 placeholder="Describe what occurred, customer impact, error messages, and immediate mitigation attempts..."
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all resize-y"
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all resize-y"
               />
             </div>
 
@@ -229,7 +229,7 @@ export default function NewIncidentPage() {
                   value={form.downtimeMinutes || ""}
                   onChange={(e) => handleChange("downtimeMinutes", e.target.value)}
                   placeholder="0"
-                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all"
                 />
               </div>
 
@@ -243,7 +243,7 @@ export default function NewIncidentPage() {
                   value={form.impactCost || ""}
                   onChange={(e) => handleChange("impactCost", e.target.value)}
                   placeholder="0"
-                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all"
                 />
               </div>
             </div>
@@ -268,7 +268,7 @@ export default function NewIncidentPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] hover:opacity-95 shadow-md shadow-[#FA5A2A]/25 disabled:opacity-50 transition-all inline-flex items-center gap-1.5"
+                className="px-6 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] hover:opacity-95 shadow-md shadow-[#FF4D1A]/25 disabled:opacity-50 transition-all inline-flex items-center gap-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{loading ? "Logging Incident..." : "Create Incident"}</span>

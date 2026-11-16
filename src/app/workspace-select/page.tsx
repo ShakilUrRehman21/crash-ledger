@@ -6,7 +6,7 @@ import { SignOutButton } from "@clerk/nextjs";
 import { Plus, ArrowRight, Building2, LogOut } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 
-const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#FAF8F5] text-sm text-[#111827] placeholder-neutral-400 focus:outline-none focus:border-[#FA5A2A] focus:bg-white transition-all";
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-[#F2EFE8] text-sm text-[#0D0D0D] placeholder-neutral-400 focus:outline-none focus:border-[#FF4D1A] focus:bg-white transition-all";
 
 function errorMessage(err: any, fallback: string): string {
     if (!err) return fallback;
@@ -85,14 +85,14 @@ export default function WorkspaceSelectorPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center text-sm text-neutral-500">Loading workspaces...</div>
+            <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center text-sm text-neutral-500">Loading workspaces...</div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4 sm:p-6">
+        <div className="min-h-screen bg-[#F2EFE8] flex items-center justify-center p-4 sm:p-6">
             <div className="w-full max-w-lg">
-                <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#FA5A2A] via-[#FF6A3D] to-[#FF8256] text-white text-center px-6 py-10 mb-6 shadow-2xl shadow-[#FA5A2A]/20">
+                <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#FF4D1A] via-[#FF6A3D] to-[#FF8256] text-white text-center px-6 py-10 mb-6 shadow-2xl shadow-[#FF4D1A]/20">
                     <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
                     <div className="absolute -bottom-8 -right-4 w-32 h-32 rounded-full bg-white/15" />
                     <div className="relative">
@@ -108,16 +108,16 @@ export default function WorkspaceSelectorPage() {
                             <button
                                 key={ws.id}
                                 onClick={() => handleSelect(ws.id)}
-                                className="group flex items-center gap-4 bg-white border border-[#EFE9E1] rounded-2xl p-4 text-left shadow-sm hover:border-[#FA5A2A] hover:shadow-md transition-all w-full"
+                                className="group flex items-center gap-4 bg-white border border-[#D9D3C7] rounded-2xl p-4 text-left shadow-sm hover:border-[#FF4D1A] hover:shadow-md transition-all w-full"
                             >
-                                <div className="w-11 h-11 rounded-xl bg-[#FFF2EC] text-[#FA5A2A] flex items-center justify-center shrink-0">
+                                <div className="w-11 h-11 rounded-xl bg-[#FFE6DC] text-[#FF4D1A] flex items-center justify-center shrink-0">
                                     <Building2 className="w-5 h-5" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-[#111827] truncate">{ws.name}</p>
+                                    <p className="text-sm font-bold text-[#0D0D0D] truncate">{ws.name}</p>
                                     <p className="text-xs text-neutral-500 mt-0.5 capitalize">{ws.role} · {ws.planType} plan</p>
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-[#FA5A2A] group-hover:translate-x-0.5 transition-all" />
+                                <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-[#FF4D1A] group-hover:translate-x-0.5 transition-all" />
                             </button>
                         ))}
                     </div>
@@ -126,13 +126,13 @@ export default function WorkspaceSelectorPage() {
                 {!showCreate ? (
                     <button
                         onClick={() => setShowCreate(true)}
-                        className="w-full border-2 border-dashed border-neutral-300 rounded-2xl py-3.5 text-sm font-semibold text-neutral-500 hover:border-[#FA5A2A] hover:text-[#FA5A2A] hover:bg-[#FFF2EC]/50 flex items-center justify-center gap-2 transition-all"
+                        className="w-full border-2 border-dashed border-neutral-300 rounded-2xl py-3.5 text-sm font-semibold text-neutral-500 hover:border-[#FF4D1A] hover:text-[#FF4D1A] hover:bg-[#FFE6DC]/50 flex items-center justify-center gap-2 transition-all"
                     >
                         <Plus className="w-4 h-4" /> Create New Workspace
                     </button>
                 ) : (
-                    <div className="bg-white border border-[#EFE9E1] rounded-2xl p-6 shadow-sm">
-                        <h3 className="text-base font-bold text-[#111827] font-heading mb-4">Create New Workspace</h3>
+                    <div className="bg-white border border-[#D9D3C7] rounded-2xl p-6 shadow-sm">
+                        <h3 className="text-base font-bold text-[#0D0D0D] font-heading mb-4">Create New Workspace</h3>
                         {error && <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2 mb-4">{error}</p>}
                         <div className="space-y-4">
                             <div>
@@ -156,7 +156,7 @@ export default function WorkspaceSelectorPage() {
                                 <button
                                     onClick={handleCreate}
                                     disabled={creating}
-                                    className="flex-[2] py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FA5A2A] to-[#FF7A00] shadow-md shadow-[#FA5A2A]/25 hover:opacity-95 disabled:opacity-50 transition-all"
+                                    className="flex-[2] py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-[#FF4D1A] to-[#FF4D1A] shadow-md shadow-[#FF4D1A]/25 hover:opacity-95 disabled:opacity-50 transition-all"
                                 >
                                     {creating ? "Creating..." : "Create & Enter"}
                                 </button>
@@ -167,7 +167,7 @@ export default function WorkspaceSelectorPage() {
 
                 <div className="text-center mt-6">
                     <SignOutButton redirectUrl="/">
-                        <button className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-[#FA5A2A] transition-colors">
+                        <button className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-[#FF4D1A] transition-colors">
                             <LogOut className="w-3.5 h-3.5" /> Sign out
                         </button>
                     </SignOutButton>

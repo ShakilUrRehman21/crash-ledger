@@ -68,7 +68,7 @@ export default function ActionItemsPage() {
 
     if (!workspaceId) {
         return (
-            <div className="min-h-screen bg-[#FAF8F5]">
+            <div className="min-h-screen bg-[#F2EFE8]">
                 <TopBar title="Action Items" />
                 <div className="p-12 text-center text-sm text-neutral-500">Please select a workspace.</div>
             </div>
@@ -77,24 +77,24 @@ export default function ActionItemsPage() {
 
     const summary = [
         { label: "Total Tasks", val: items.length, color: "#0284C7", bg: "#E0F2FE", icon: AlertTriangle },
-        { label: "In Progress", val: items.filter((i) => i.status === "in_progress").length, color: "#EA580C", bg: "#FFF2EC", icon: Clock },
+        { label: "In Progress", val: items.filter((i) => i.status === "in_progress").length, color: "#EA580C", bg: "#FFE6DC", icon: Clock },
         { label: "Completed", val: items.filter((i) => i.status === "done").length, color: "#059669", bg: "#D1FAE5", icon: CheckCircle2 },
         { label: "Overdue", val: items.filter(isOverdueFn).length, color: "#DC2626", bg: "#FEE2E2", icon: AlertCircle },
     ];
 
     return (
-        <div className="min-h-screen bg-[#FAF8F5] pb-16">
+        <div className="min-h-screen bg-[#F2EFE8] pb-16">
             <TopBar title="Action Items" subtitle="Track remediation tasks across all incidents" showCreateIncident workspaceId={workspaceId} />
             <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {summary.map(({ label, val, color, bg, icon: Icon }) => (
-                        <div key={label} className="bg-white rounded-2xl border border-[#EFE9E1] shadow-sm p-4 flex items-center gap-3">
+                        <div key={label} className="bg-white rounded-2xl border border-[#D9D3C7] shadow-sm p-4 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: bg, color }}>
                                 <Icon className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="text-2xl font-extrabold text-[#111827] font-heading leading-none">{val}</p>
+                                <p className="text-2xl font-extrabold text-[#0D0D0D] font-heading leading-none">{val}</p>
                                 <p className="text-xs text-neutral-500 mt-1 font-medium">{label}</p>
                             </div>
                         </div>
@@ -110,7 +110,7 @@ export default function ActionItemsPage() {
                         <button
                             key={key}
                             onClick={() => setFilter(key)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${filter === key ? "bg-[#FA5A2A] text-white border-[#FA5A2A] shadow-md shadow-[#FA5A2A]/20" : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300"}`}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${filter === key ? "bg-[#FF4D1A] text-white border-[#FF4D1A] shadow-md shadow-[#FF4D1A]/20" : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-300"}`}
                         >
                             {label}
                         </button>
@@ -121,10 +121,10 @@ export default function ActionItemsPage() {
                     {COLUMNS.map((col) => {
                         const colItems = filtered.filter((i) => i.status === col.key);
                         return (
-                            <div key={col.key} className="bg-[#F4EFEB]/60 rounded-2xl p-3">
+                            <div key={col.key} className="bg-[#E9E4DA]/60 rounded-2xl p-3">
                                 <div className="flex items-center gap-2 mb-3 px-1">
                                     <span className="w-2.5 h-2.5 rounded-full" style={{ background: col.color }} />
-                                    <span className="text-sm font-bold text-[#111827] font-heading">{col.label}</span>
+                                    <span className="text-sm font-bold text-[#0D0D0D] font-heading">{col.label}</span>
                                     <span className="ml-1 px-2 py-0.5 rounded-full text-[11px] font-bold" style={{ background: col.bg, color: col.color }}>{colItems.length}</span>
                                 </div>
                                 <div className="flex flex-col gap-3">
@@ -138,16 +138,16 @@ export default function ActionItemsPage() {
                                         return (
                                             <div
                                                 key={item.id}
-                                                className="bg-white rounded-xl border border-[#EFE9E1] p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+                                                className="bg-white rounded-xl border border-[#D9D3C7] p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
                                                 style={{ borderLeft: `4px solid ${pc}` }}
                                             >
                                                 {overdue && (
                                                     <span className="inline-block mb-2 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-50 text-red-600 border border-red-200">OVERDUE</span>
                                                 )}
-                                                <p className="text-sm font-bold text-[#111827] leading-snug mb-2">{item.title}</p>
+                                                <p className="text-sm font-bold text-[#0D0D0D] leading-snug mb-2">{item.title}</p>
 
                                                 {inc && (
-                                                    <Link href={`/dashboard/incidents/${inc.id}`} className="flex items-center gap-1 text-[11px] font-semibold text-[#FA5A2A] mb-3 hover:underline">
+                                                    <Link href={`/dashboard/incidents/${inc.id}`} className="flex items-center gap-1 text-[11px] font-semibold text-[#FF4D1A] mb-3 hover:underline">
                                                         <FolderOpen className="w-3 h-3 shrink-0" />
                                                         <span className="truncate">{inc.title}</span>
                                                         <ChevronRight className="w-3 h-3 shrink-0" />
@@ -169,7 +169,7 @@ export default function ActionItemsPage() {
                                                     ) : <span />}
                                                     <button
                                                         onClick={() => advanceStatus(item.id)}
-                                                        className="px-3 py-1 rounded-full text-[11px] font-bold border border-neutral-200 text-neutral-700 hover:bg-[#FFF2EC] hover:border-[#FA5A2A] hover:text-[#FA5A2A] transition-all"
+                                                        className="px-3 py-1 rounded-full text-[11px] font-bold border border-neutral-200 text-neutral-700 hover:bg-[#FFE6DC] hover:border-[#FF4D1A] hover:text-[#FF4D1A] transition-all"
                                                     >
                                                         {item.status === "done" ? "Reopen" : "Advance →"}
                                                     </button>
